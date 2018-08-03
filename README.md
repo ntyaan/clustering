@@ -59,7 +59,6 @@ plsa.cxx plsa.h 作りかけ
 ```
 $ make (vectorクラス等の中間ファイル作成、-Bで強制コンパイル) 
 $ make ターゲット(.out)で実行ファイルコンパイル
-$ ./a手法名(人工データartificiality).out or ./r手法名(実データreal).out
 ```
 
 ## 実データ一覧 
@@ -72,22 +71,6 @@ $ ./a手法名(人工データartificiality).out or ./r手法名(実データrea
 | Libimseti | LIBIMSETI	| 866 | 1156 |
 | Epinions | EPINIONS | 1022 | 835 |
 | Sushi	| SUSHI	| 5000 | 100 |
-
-## 実データの場合:
-```
-$ make ターゲット data=マクロ名
-例(klfcsをBookCrossingに適用する場合):
-$ make rklfcs.out data=BOOK
-クラスの呼び出し等デバグしたいとき
-$ make ターゲット data=マクロ名 class=1
-```
-
-## 人工データの場合:
-```
-$ make ターゲット
-例(klfcs)
-$ make aklfcs.out
-```
 
 ##### git memo
 
