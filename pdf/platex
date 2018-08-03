@@ -1,0 +1,7 @@
+#!/bin/sh
+platex FCM
+if [ $? = 0 ]; then
+    platex FCM
+    dvipdfmx -f ~/ipaex.map FCM
+    rm -f *.aux *.log *.dvi *.out *.nav *.snm *.toc
+fi

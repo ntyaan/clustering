@@ -1,0 +1,537 @@
+\documentclass[fleqn,dvipdfmx,10pt]{beamer}
+\usepackage{amsmath,amssymb,ascmac}
+\usepackage{txfonts}
+\usepackage[english]{babel}
+\usepackage{algorithmic,algorithm}
+\usepackage{url}
+\renewcommand{\familydefault}{\sfdefault}
+\usetheme{CambridgeUS}
+\usecolortheme{crane}
+\setbeamertemplate{navigation symbols}{}
+\newcommand{\todayd}{\the\year\text{年}\the\month\text{月}\the\day\text{日}}
+\global\long\def\T#1{#1^{\top}}
+
+%\title{FCM clustering}
+%\author{}
+%\institute{}
+
+
+\begin{document}
+
+
+%\section{　}
+%\begin{frame}\frametitle{}
+%  \begin{table}[htbp]
+%    \begin{tabular}{c|c||c|c} \hline
+%      $N$ & number of user   & $M$ & number of item \\\hline
+%      $C$ & number of cluster  & $x_{k,\ell}$ &  value\\\hline
+%      $u_{i,k}$ & user membership  & $w_{i,\ell}$ & item membership \\\hline
+%      $m$ & parameter & $\lambda$ & parameter \\\hline
+%      $\pi_i$ & cluster size & $v_{i}$ & cluster center\\\hline %\\\cline{1-2}    
+%    \end{tabular}
+%  \end{table}
+%  \begin{block}{FCCM-type subject to}
+%    \begin{align*}
+%      \sum_{i=1}^Cu_{i,k}=1\;,\;u_{i,k}\in[0,1]\quad
+%      \sum_{\ell=1}^Mw_{i,\ell}=1\;,\;w_{i,\ell}\in[0,1]\quad
+%      \sum_{i=1}^C\pi_{i}=1\;,\;\pi_{i}\in[0,1]\\
+%    \end{align*}
+%  \end{block}
+%  \begin{block}{sphericalFCM-type subject to}
+%    \begin{align*}
+%      \sum_{i=1}^Cu_{i,k}=1\;,\;u_{i,k}\in[0,1]\quad
+%      ||v_i||_2=\sqrt{\sum_{\ell=1}^M v_{i,\ell}^2}=1\quad
+%      \sum_{i=1}^C\pi_{i}=1\;,\;\pi_{i}\in[0,1]\\
+%    \end{align*}
+%  \end{block}
+%\end{frame}
+
+\section{HCM}
+\begin{frame}\frametitle{HCM\scriptsize(Hard $c$-means)}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^Nu_{i,k}||x_k-v_i||_2^2\quad$ subject
+    $\;$ to $\; \sum_{i=1}^Cu_{i,k}$=1 \;and\; $u_{i,k}\in\{0,1\}$
+  \end{block}
+  \begin{align*}
+    u_{i,k}&=\begin{cases}
+    1 & (i=\text{arg min}_{1 \leq j \leq C}\{||x_k-v_i||_2^2\}) \\
+    0 & (\text{otherwise})
+    \end{cases},\\
+    v_{i}&=
+    \frac{\sum_{k=1}^N u_{i,k}x_{k}}{\sum_{k=1}^N u_{i,k}}.
+  \end{align*}
+\end{frame}
+
+\subsection{BFCM}
+\begin{frame}\frametitle{BFCM\scriptsize{(Bezdek-type fuzzy $c$-means with
+      variables controlling cluster sizes)}}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m||x_k-v_i||_2^2$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=||x_{k}-v_{i}||_{2}^2=\left(\sqrt{\sum_{\ell=1}^M (x_{k,\ell}-v_{i,\ell})^2}\;\right)^2,\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-m}},\quad
+    v_{i}=\frac{\sum_{k=1}^N(u_{i,k})^mx_{k}}{\quad\sum_{k=1}^N(u_{i,k})^{m}},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^md_{j,k}}{(u_{i,k})^md_{i,k}}\right)^{\frac{1.0}{m}}}.
+  \end{align*}
+\end{frame}
+
+\subsection{KLFCM}
+\begin{frame}\frametitle{KLFCM\scriptsize(%Entropy-regularized
+    KL-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^Nu_{i,k}||x_k-v_i||_2^2+\lambda^{-1}\sum_{i=1}^C\sum_{k=1}^Nu_{i,k}\log(\frac{u_{i,k}}{\pi_{i}})$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=||x_{k}-v_{i}||_{2}^2, \\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\exp\left(-\lambda(d_{j,k}-d_{i,k})\right)},\quad
+    %\frac{\pi_{i}\exp(-\lambda||x_k-v_i||_2^2)}{\sum_{j=1}^C\pi_{j}
+    % \exp(-\lambda||x_k-v_j||_2^2)\quad,}\\
+    v_{i}=\frac{\sum_{k=1}^Nu_{i,k}x_{k}}{\quad\sum_{k=1}^Nu_{i,k}},\\
+    \pi_{i}&=\frac{\sum_{k=1}^Nu_{i,k}}{\quad N}.
+  \end{align*}
+\end{frame}
+
+
+\subsection{QFCM}
+\begin{frame}\frametitle{QFCM\scriptsize(%Tsallis Entropy-regularized
+    q-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m||x_k-v_i||_2^2+\frac{\lambda^{-1}}{m-1}\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=||x_{k}-v_{i}||_{2}^2, \\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{1.0-\lambda(1.0-m)d_{j,k}}{1.0-\lambda(1.0-m)d_{i,k}}\right)^{\frac{1.0}{1.0-m}}},\quad
+    %u_{i,k}&=\frac{\pi_{i}(1+\lambda(1-m)||x_i-v_k||_2^2)^\frac{1}{1-m}}{\quad\sum_{j=1}^C\pi_{j}(1+\lambda(1-m)||x_j-v_k||_2^2)^\frac{1}{1-m}\quad,}\\
+    v_{i}=\frac{\sum_{k=1}^N(u_{i,k})^mx_{k}}{\quad\sum_{k=1}^N(u_{i,k})^{m}},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^m(1.0-\lambda(1.0-m)d_{j,k})}{(u_i,k)^m(1.0-\lambda(1.0-m)d_{i,k})}\right)^{\frac{1.0}{m}}}.\\
+    %\pi_{i}&=\frac{(\sum_{k=1}^N(u_{i,k})^{m}(1+\lambda(1-m)||x_i-v_k||_2^2)^\frac{1}{m}}{\quad\sum_{j=1}^C(\sum_{k=1}^N(u_{j,k})^{m}(1+\lambda(1-m)||x_j-v_k||_2^2))^\frac{1}{m}\quad.}
+  \end{align*}
+  ref：\url{https://www.jstage.jst.go.jp/article/fss/30/0/30_452/_pdf}\centering
+\end{frame}
+
+\subsection{FCCM}
+\begin{frame}\frametitle{FCCM}%~\small{(Fuzzy Clustering for Categorical Multivariate Data)}}
+  \begin{block}{optimization problem}
+    $\underset{u,w,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^M-u_{i,k}w_{i,\ell}x_{k,\ell}$\\
+    $+\lambda_1^{-1}\sum_{i=1}^C\sum_{k=1}^N u_{i,k}\log{(\frac{u_{i,k}}{\pi_i})}
+    +\lambda_2^{-1}\sum_{i=1}^C\sum_{\ell=1}^M w_{i,\ell}\log(w_{i,\ell})$\centering\\
+  \end{block}
+  \begin{align}
+    d_{i,k}&=-\sum_{\ell=1}^Mw_{i,\ell}x_{k,\ell},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\exp\left(-\lambda(d_{j,k}-d_{i,k})\right)},\\
+    %u_{i,k}&=\frac{\pi_i\exp(\lambda_1^{-1}
+    %\sum_{\ell=1}^Mw_{i,\ell}x_{k,\ell})}{\sum_{j=1}^C\pi_j\exp(\lambda_1^{-1} \sum_{\ell=1}^Mw_{j,\ell}x_{k,\ell})},\\
+    w_{i,\ell}&=\frac{1.0}{\sum_{r=1}^M\exp\left(\lambda_2\sum_{k=1}^N(u_{i,k}x_{k,r}-u_{i,k}x_{k,\ell})\right)},\quad
+    \pi_i=\frac{1}{N}\sum_{k=1}^Nu_{i,k}.
+  \end{align}
+  ref：\url{http://ieeexplore.ieee.org/document/944403/}\centering
+\end{frame}
+
+\subsection{FCCMb}
+\begin{frame}\frametitle{FCCMb}%~\small{(Bezdek-type Fuzzy Clustering for Categorical Multivariate Data)}}
+  \begin{block}{optimization problem}
+    $\underset{u,w,\pi}{\text{minimize}}$
+    $-\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^M(\pi_i)^{1-{m_1}}(u_{i,k})^{m_1}(w_{i,\ell})^{m_2}x_{k,\ell}$
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=-\sum_{\ell=1}^M(w_{i,\ell})^{m_2}x_{k,\ell},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m_1}}},\quad
+    %u_{i,k}=\frac{\pi_i(\sum_{\ell=1}^M(w_{i,\ell})^\frac{1}{m_2}x_{k,\ell})^\frac{m_1}{m_1-1}}{\sum_{j=1}^C\pi_j(\sum_{\ell=1}^M(w_{j,\ell})^\frac{1}{m_2}x_{k,\ell})^\frac{m_1}{m_1-1}},\\
+    w_{i,\ell}=\frac{1.0}{\sum_{r=1}^M\left(\sum_{k=1}^N\frac{(u_{i,k})^{m_1}x_{k,r}}{(u_{i,k})^{m_1}x_{k,\ell}}\right)^{\frac{1.0}{1.0-{m_2}}}}, \\
+    %w_{i,\ell}&=\frac{(\sum_{k=1}^N(u_{i,k})^\frac{1}{m_1}x_{k,\ell})^\frac{m_2}{m_2-1}}{\sum_{r=1}^M(\sum_{k=1}^N(u_{i,k})^\frac{1}{m_1}x_{k,r})^\frac{m_2}{m_2-1}},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m_1}d_{j,k}}{(u_{i,k})^{m_1}d_{i,k}}\right)^{\frac{1.0}{m_1}}}.\\
+    %\pi_i&=\frac{(\sum_{k=1}^N\sum_{\ell=1}^M(u_{i,k})^\frac{1}{m_1}(w_{i,\ell})^\frac{1}{m_2}x_{k,\ell})^{m_1}}{\sum_{j=1}^C(\sum_{k=1}^N\sum_{\ell=1}^M(u_{j,k})^\frac{1}{m_1}(w_{j,\ell})^\frac{1}{m_2}x_{k,\ell})^{m_1}}.
+  \end{align*}
+  ref：\url{https://www.fujipress.jp/jaciii/jc/jacii001900060852/}\centering
+\end{frame}
+
+\subsection{BFCCM}
+\begin{frame}\frametitle{BFCCM}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $-\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^M(\pi_i)^{1-m}(u_{i,k})^m \log{(w_{i,\ell})}x_{k,\ell}$
+  \end{block}
+  \begin{center}
+    \begin{align*}
+      d_{i,k}&=-\sum_{\ell=1}^M\log(w_{i,\ell})x_{k,\ell},\\
+      u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m_1}}},\quad
+      %u_{i,k}&=\frac{\pi_i (-\sum_{\ell=1}^M \log{(w_{i,\ell})} x_{k,\ell})^{\frac{1}{1-m}}}{\sum_{j=1}^C \pi_j (-\sum_{\ell=1}^M \log{(w_{j,\ell})} x_{k,\ell})^{\frac{1}{1-m}}}\\
+      w_{i,\ell}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k,\ell}}{\sum_{r=1}^M \sum_{k=1}^N (u_{i,k})^m x_{k,r}},\\
+      \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m_1}d_{j,k}}{(u_{i,k})^{m_1}d_{i,k}}\right)^{\frac{1.0}{m_1}}}.\\
+      %\pi_{i}&=\frac{(-\sum_{k=1}^N\sum_{\ell=1}^M (u_{i,k})^m \log{(w_{i,\ell}) x_{k,\ell}})^{\frac{1}{m}}}{\sum_{j=1}^C (-\sum_{k=1}^N\sum_{\ell=1}^M (u_{j,k})^m \log{(w_{j,\ell}) x_{k,\ell}})^{\frac{1}{m}}}\\
+    \end{align*}
+  \end{center}
+\end{frame}
+
+\subsection{KLFCCM}
+\begin{frame}\frametitle{KLFCCM}%~\small{(Fuzzy Co-Clustering Based on KL Information Regularization)}}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $-\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}\log{(w_{i,\ell})}x_{k,\ell}+\lambda^{-1}\sum_{i=1}^C\sum_{k=1}^N u_{i,k}\log{(\frac{u_{i,k}}{\pi_i})}$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=-\sum_{\ell=1}^M\log(w_{i,\ell})x_{k,\ell},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\exp\left(-\lambda(d_{j,k}-d_{i,k})\right)},\quad
+    %u_{i,k}&=\frac{\pi_{i}\prod_{\ell=1}^{M}(w_{i,\ell})^{x_{k,\ell}\lambda}}{\sum_{j=1}^C \pi_{j}\prod_{\ell=1}^M (w_{j,\ell})^{x_{k,\ell}\lambda}},\\
+    w_{i,\ell}=\frac{\sum_{k=1}^N u_{i,k}x_{k,\ell}}{\sum_{r=1}^M\sum_{k=1}^N u_{i,k}x_{k,r}},\\
+    \pi_{i}&=\frac{1}{N}\sum_{k=1}^N u_{i,k}.
+  \end{align*}
+  ref：\url{http://ieeexplore.ieee.org/abstract/document/6891747/}\centering
+\end{frame}
+
+\subsection{QFCCM}
+\begin{frame}\frametitle{QFCCM}%\small{(Fuzzy clustering based on $\alpha$-divergence for categorical multivariate data)}}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $-\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^M(\pi_i)^{1-m}(u_{i,k})^m\log(w_{i,\ell})x_{k,\ell}$\\
+    $+\frac{\lambda^{-1}}{m-1}\sum_{i=1}^C\sum_{k=1}^N (\pi_i)^{1-m}(u_{i,k})^m$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=-\sum_{\ell=1}^M\log(w_{i,\ell})x_{k,\ell},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{1.0-\lambda(1.0-m)d_{j,k}}{1.0-\lambda(1.0-m)d_{i,k}}\right)^{\frac{1.0}{1.0-m}}},\quad
+    %u_{i,k}=\frac{{\pi_i}(1+{\lambda}(1-m)\sum_{\ell=1}^M{\log{(w_{i,l})}}{x_{k,l}})^{\frac{1}{1-m}}}{\sum_{j=1}^C \pi_j (1+\lambda (1-m) \sum_{\ell=1}^M \log{(w_{j,\ell})} x_{k,\ell})^{\frac{1}{1-m}}},\\
+    w_{i,l}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k,\ell}}{\sum_{r=1}^M\sum_{k=1}^N(u_{i,k})^m x_{k,r}},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^m(1.0-\lambda(1.0-m)d_{j,k})}{(u_i,k)^m(1.0-\lambda(1.0-m)d_{i,k})}\right)^{\frac{1.0}{m}}}.\\
+    %\pi_i&=\frac{(\sum_{k=1}^N (u_{i,k})^m (1+\lambda(1-m)\sum_{\ell=1}^M \log{(w_{i,\ell})}x_{k,l}))^\frac{1}{m}}{\sum_{j=1}^C (\sum_{k=1}^N (u_{j,k})^m(1+\lambda(1-m)\sum_{\ell=1}^M\log{(w_{j,\ell})}x_{k,\ell}))^\frac{1}{m}}.
+  \end{align*}
+  ref：\url{http://ieeexplore.ieee.org/document/7337853/}\centering
+\end{frame}
+
+\subsection{BFCCMM}
+\begin{frame}\frametitle{BFCCMM}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $-\frac{1}{t}\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^M(u_{i,k})^m\left((w_{i,\ell})^t-1\right)x_{k,\ell}$
+  \end{block}
+  \begin{center}
+    \begin{align*}
+      d_{i,k}&=-\frac{1.0}{t}\sum_{\ell=1}^M\left((w_{i,\ell})^{t}-1.0\right)x_{k,\ell},\\
+      u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m_1}}},\quad
+      w_{i,\ell}=\frac{1.0}{\sum_{r=1}^M\left(\sum_{k=1}^N\frac{(u_{i,k})^m x_{k,r}}{(u_{i,k})^m x_{k,\ell}}\right)^{\frac{1.0}{1.0-t}}},\\
+      \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m_1}d_{j,k}}{(u_{i,k})^{m_1}d_{i,k}}\right)^{\frac{1.0}{m_1}}}.\\
+      %\pi_{i}&=\frac{(-\sum_{k=1}^N\sum_{\ell=1}^M (u_{i,k})^m \log{(w_{i,\ell}) x_{k,\ell}})^{\frac{1}{m}}}{\sum_{j=1}^C (-\sum_{k=1}^N\sum_{\ell=1}^M (u_{j,k})^m \log{(w_{j,\ell}) x_{k,\ell}})^{\frac{1}{m}}}\\
+    \end{align*}
+  \end{center}
+\end{frame}
+
+\subsection{KLFCCMM}
+\begin{frame}\frametitle{KLFCCMM}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $-\frac{1}{t}\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}((w_{i,\ell})^t-1)x_{k,\ell}+\lambda^{-1}\sum_{i=1}^C\sum_{k=1}^N u_{i,k}\log{(\frac{u_{i,k}}{\pi_i})}$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=-\frac{1.0}{t}\sum_{\ell=1}^M\left((w_{i,\ell})^{t}-1.0\right)x_{k,\ell},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\exp\left(-\lambda(d_{j,k}-d_{i,k})\right)},\quad
+    %u_{i,k}=\frac{\pi_i\exp(\frac{\lambda}{t}\sum_{\ell=1}^M((w_{i,\ell})^t-1)x_{k,\ell})}{\sum_{j=1}^C\pi_j\exp(\frac{\lambda}{t} \sum_{\ell=1}^M ((w_{i,\ell})^t-1)x_{k,\ell})},\\
+    w_{i,\ell}=\frac{1.0}{\sum_{r=1}^M\left(\sum_{k=1}^N\frac{u_{i,k} x_{k,r}}{u_{i,k}x_{k,\ell}}\right)^{\frac{1.0}{1.0-t}}},\\
+    %w_{i,\ell}&=\left(\sum_{r=1}^M\frac{(\sum_{k=1}^N u_{i,k} x_{k,\ell})^{\frac{1}{t-1}}}{(\sum_{k=1}^N u_{i,k} x_{k,r})^{\frac{1}{t-1}}}\right)^{-1},\\
+    \pi_{i}&=\frac{1}{N}\sum_{k=1}^N u_{i,k}.
+  \end{align*}
+  ref：\url{http://ieeexplore.ieee.org/document/6982814/}\centering
+\end{frame}
+
+\subsection{QFCCMM}
+\begin{frame}\frametitle{QFCCMM}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $-\frac{1}{t}\sum_{i=1}^C\sum_{k=1}^N\sum_{\ell=1}^M(\pi_i)^{1-m}(u_{i,k})^m((w_{i,\ell})^t-1)x_{k,\ell}$\\
+    $+\frac{\lambda^{-1}}{m-1}\sum_{i=1}^C\sum_{k=1}^N (\pi_i)^{1-m}(u_{i,k})^m$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=-\frac{1.0}{t}\sum_{\ell=1}^M\left((w_{i,\ell})^{t}-1.0\right)x_{k,\ell},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{1.0-\lambda(1.0-m)d_{j,k}}{1.0-\lambda(1.0-m)d_{i,k}}\right)^{\frac{1.0}{1.0-m}}},\quad
+    %u_{i,k}=\frac{{\pi_i}(1+{\lambda}(1-m)\sum_{\ell=1}^M{\frac{1}{t}((w_{j,\ell})^t-1)}{x_{k,l}})^{\frac{1}{1-m}}}{\sum_{j=1}^C \pi_j (1+\lambda (1-m) \sum_{\ell=1}^M \frac{1}{t}((w_{j,\ell})^t-1) x_{k,\ell})^{\frac{1}{1-m}}},\\
+    w_{i,\ell}=\frac{1.0}{\sum_{r=1}^M\left(\sum_{k=1}^N\frac{(u_{i,k})^m x_{k,r}}{(u_{i,k})^m x_{k,\ell}}\right)^{\frac{1.0}{1.0-t}}},\\
+    %w_{i,\ell}&=\left(\sum_{r=1}^M\frac{(\sum_{k=1}^N (u_{i,k})^m x_{k,\ell})^{\frac{1}{t-1}}}{(\sum_{k=1}^N (u_{i,k})^m x_{k,r})^{\frac{1}{t-1}}}\right)^{-1},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^m(1.0-\lambda(1.0-m)d_{j,k})}{(u_i,k)^m(1.0-\lambda(1.0-m)d_{i,k})}\right)^{\frac{1.0}{m}}}.\\
+    %\pi_i&=\frac{(\sum_{k=1}^N (u_{i,k})^m (1+\lambda(1-m)\sum_{\ell=1}^M \frac{1}{t}((w_{i,\ell})^t-1) x_{k,l}))^\frac{1}{m}}{\sum_{j=1}^C (\sum_{k=1}^N (u_{j,k})^m(1+\lambda(1-m)\sum_{\ell=1}^M \frac{1}{t}((w_{j,\ell})^t-1) x_{k,\ell}))^\frac{1}{m}}.
+  \end{align*}
+  ref：\url{http://ieeexplore.ieee.org/document/7337853/}(式注意)\centering
+\end{frame}
+
+\subsection{BFCS}
+\begin{frame}\frametitle{BFCS}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m(1-\T{x_k}v_i)$ \centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=1.0-\T{x_k}v_i,\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-m}},\quad
+    v_{i}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k}}{||\sum_{k=1}^N (u_{i,k})^mx_{k}||_2},\\
+    %v_{i}=\frac{\sum_{k=1}^N(u_{i,k})^mx_{k}}{\quad\sum_{k=1}^N(u_{i,k})^{m}},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^md_{j,k}}{(u_{i,k})^md_{i,k}}\right)^{\frac{1.0}{m}}}.
+    %u_{i,k}&=\sum_{j=1}^C\frac{\pi_{i}}{\pi_{j}}\left(\frac{1-\T{x_k}v_{i}}{1-\T{x_{k}}v{j}}\right)^{\frac{1}{1-m}},\\
+    %\pi_{i}&=\frac{(\sum_{k=1}^N(u_{i,k})^{m}\T{x_k}v_{i})^\frac{1}{m}}{\quad\sum_{j=1}^C(\sum_{k=1}^N(u_{j,k})^{m}\T{x_k}v_{i})^\frac{1}{m}}.
+  \end{align*}
+  ref：\url{http://ieeexplore.ieee.org/document/6891670/}\centering
+\end{frame}
+
+\subsection{KLFCS}
+\begin{frame}\frametitle{KLFCS}%\scriptsize(Entropy-regularizedKL-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^Nu_{i,k}(1-\T{x_k}v_i)+\lambda^{-1}\sum_{i=1}^C\sum_{k=1}^Nu_{i,k}\log(\frac{u_{i,k}}{\pi_{i}})$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=1.0-\T{x_k}v_i,\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\exp\left(-\lambda(d_{j,k}-d_{i,k})\right)},\quad
+    %\frac{\pi_{i}\exp(-\lambda||x_k-v_i||_2^2)}{\sum_{j=1}^C\pi_{j}
+    % \exp(-\lambda||x_k-v_j||_2^2)\quad,}\\
+    v_{i}=\frac{\sum_{k=1}^N u_{i,k} x_{k}}{||\sum_{k=1}^N u_{i,k}x_{k}||_2},\\
+    \pi_{i}&=\frac{\sum_{k=1}^Nu_{i,k}}{\quad N}.
+  \end{align*}
+\end{frame}
+
+\subsection{QFCS}
+\begin{frame}\frametitle{QFCS}%\scriptsizeTsallis Entropy-regularized q-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m(1-\T{x_k}v_i)+\frac{\lambda^{-1}}{m-1}\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=1.0-\T{x_k}v_i,\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{1.0-\lambda(1.0-m)d_{j,k}}{1.0-\lambda(1.0-m)d_{i,k}}\right)^{\frac{1.0}{1.0-m}}},\quad
+    %u_{i,k}&=\frac{\pi_{i}(1+\lambda(1-m)||x_i-v_k||_2^2)^\frac{1}{1-m}}{\quad\sum_{j=1}^C\pi_{j}(1+\lambda(1-m)||x_j-v_k||_2^2)^\frac{1}{1-m}\quad,}\\
+    v_{i}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k}}{||\sum_{k=1}^N (u_{i,k})^mx_{k}||_2},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^m(1.0-\lambda(1.0-m)d_{j,k})}{(u_i,k)^m(1.0-\lambda(1.0-m)d_{i,k})}\right)^{\frac{1.0}{m}}}.\\
+    %\pi_{i}&=\frac{(\sum_{k=1}^N(u_{i,k})^{m}(1+\lambda(1-m)||x_i-v_k||_2^2)^\frac{1}{m}}{\quad\sum_{j=1}^C(\sum_{k=1}^N(u_{j,k})^{m}(1+\lambda(1-m)||x_j-v_k||_2^2))^\frac{1}{m}\quad.}
+  \end{align*}
+\end{frame}
+
+\subsection{BPCS}
+\begin{frame}\frametitle{BPCS}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $\sum_{k=1}^N(u_{1,k})^m(1-\T{x_k}v_1)-\alpha\sum_{k=1}^N(1-u_{1,k})^m$ \centering\\
+  \end{block}
+  \begin{align*}
+    d_{1,k}&=1.0-\T{x_k}v_1,\\
+    u_{1,k}&=\frac{1.0}{1.0+\left(\frac{md_{1,k}}{\alpha}\right)^{\frac{1.0}{m-1.0}}},\quad
+    v_{1}=\frac{\sum_{k=1}^N (u_{1,k})^m x_{k}}{||\sum_{k=1}^N (u_{1,k})^mx_{k}||_2},\\
+  \end{align*}
+  ref：\url{https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=531779}\centering
+\end{frame}
+
+\subsection{EPCS}
+\begin{frame}\frametitle{EPCS}%\scriptsize(Entropy-regularizedKL-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $\sum_{k=1}^Nu_{1,k}(1-\T{x_k}v_1)+\lambda^{-1}\sum_{k=1}^Nu_{1,k}\log(u_{1,k})-\alpha\sum_{k=1}^Nu_{1,k}$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{1,k}&=1.0-\T{x_k}v_1,\\
+    u_{1,k}&=\exp(\lambda(\alpha-d_{1,k})-1.0),\quad
+    v_{1}=\frac{\sum_{k=1}^N u_{1,k} x_{k}}{||\sum_{k=1}^N u_{1,k}x_{k}||_2},\\
+  \end{align*}
+  ref\url{https://link.springer.com/chapter/10.1007/978-3-319-23240-9_10}
+\end{frame}
+
+\subsection{QPCS}
+\begin{frame}\frametitle{QPCS}%\scriptsizeTsallis Entropy-regularized q-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $\sum_{k=1}^N(u_{1,k})^m(1-\T{x_k}v_1)+\frac{\lambda^{-1}}{m-1}\sum_{k=1}^N\left((u_{1,k})^m-u_{1,k}\right)-\alpha\sum_{k=1}u_{1,k}$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{1,k}&=1.0-\T{x_k}v_1,\\
+   u_{1,k}&=\left(\frac{1.0-\lambda(1.0-m)d_{1,k}}{1.0+\alpha\lambda(1.0-m^{-1})}\right)^{\frac{1.0}{1.0-m}},\quad
+   v_{1}=\frac{\sum_{k=1}^N (u_{1,k})^m x_{k}}{||\sum_{k=1}^N (u_{1,k})^mx_{k}||_2},\\
+  \end{align*}
+\end{frame}
+%\subsection{qFCCM(仮)}
+%\begin{frame}\frametitle{qFCCM(仮)}
+%  \begin{block}{optimization problem}
+%    $\underset{u,w,\pi}{\text{maximize}}~J_{qFCCM}$\\
+%    $J_{qFCCM}=\sum_{i=1}^C\sum_{k=1}^N(\pi_i)^{1-m}(u_{i,k})^m(\frac{1}{(m-1)(m-2)}\sum_{\ell=1}^M(x_{k,\ell})^{2-m}(1-(w_{i,\ell})^{m-1}))$\\$+\frac{\lambda^{-1}}{1-m}\sum_{i=1}^C\sum_{k=1}^N (\pi_i)^{1-m}(u_{i,k})^m$\centering 	%\raggedleft
+%  \end{block}
+%  $s_{i,k}=\frac{1}{(m-1)(m-2)}\sum_{l=1}^M(x_{k,\ell})^{2-m}(1-(w_{i,\ell})^{m-1})$\centering\\
+%  \begin{align*}
+%    u_{i,k}&=\frac{\pi_i(1+\lambda(1-m)s_{i,k})^{\frac{1}{1-m}}}{\sum_{j=1}^C\pi_{j}(1+\lambda(1-m)s_{j,k})^{\frac{1}{1-m}}},
+%    w_{i,\ell}=\frac{(\sum_{k=1}^N (u_{i,k})^m (x_{k,\ell})^{2-m})^{\frac{1}{2-m}}}{\sum_{r=1}^M (\sum_{k=1}^N (u_{i,k})^m (x_{k,r})^{2-m})^{\frac{1}{2-m}}},\\
+%    \pi_i&=\frac{(\sum_{k=1}^N (u_{i,k})^m(1+\lambda(1-m) s_{i,k}))^{\frac{1}{m}}}{\sum_{j=1}^C (\sum_{k=1}^N (u_{j,k})^m(1+\lambda(1-m) s_{j,k}))^{\frac{1}{m}}}.\\
+%  \end{align*}
+%\end{frame}
+
+\subsection{KLFCCMP}
+\begin{frame}\frametitle{KLFCCMP}
+  \begin{block}{optimization problem}
+    $\underset{u,\alpha,\pi}{\text{minimize}}~J_{KLFCCMP}$\\
+    $J_{KLFCCMP}=-\sum_{i=1}^C\sum_{k=1}^N u_{i,k} \left(\log\Gamma(s_i)-\log\Gamma(s_i+\sum_{\ell=1}^M x_{k,\ell})+\sum_{\ell:(x_{k,l})\geq1} log(\alpha_{i,\ell})\right)$\\$+\lambda^{-1}\sum_{i=1}^C\sum_{k=1}^N u_{i,k}\log(\frac{u_{i,k}}{\pi_i})\;,\;s_i=\sum_{\ell=1}^M \alpha_{i,\ell}$\centering 	%\raggedleft
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=-\log\Gamma(s_i)+\log\Gamma(s_i+\sum_{\ell=1}^M x_{k,\ell})-\sum_{\ell:(x_{k,\ell})\geq1} log(\alpha_{i,\ell})\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C \frac{\pi_{j}}{\pi_i}\exp(-\lambda(d_{j,k}-d_{i,k}))},\quad
+    \pi_i=\frac{\sum_{k=1}^N u_{i,k}}{N}\\
+    \alpha_{i,\ell}&=\frac{\sum_{k=1}^N u_{i,k}}{\sum_{k=1}^N u_{i,k} \psi(s_i+x_{k,\ell})-\sum_{k=1}^N u_{i,k}\psi(s_i)}.
+  \end{align*}
+   ref：\url{https://link.springer.com/chapter/10.1007/978-3-319-67422-3_9}
+\end{frame}
+
+\subsection{OCS-BFCS}
+\begin{frame}\frametitle{OCS-BFCS}
+  \begin{block}{optimization problem}
+    $\underset{u,v,\pi}{\text{minimize}}$
+    $\sum_{i=1}^C\sum_{k=1}^N(\pi_{i})^{1-m}(u_{i,k})^m(1-\T{x_k}v_i)$ \centering\\
+  \end{block}
+  \begin{align*}
+    d_{i,k}&=1.0-\T{x_k}v_i,\\
+    x_{k,\ell}&=\frac{\left(\sum_{i=1}^C(\pi_i)^{1.0-m}(u_{i,k})^mv_{i,\ell}\right)\sqrt{1.0-\sum_{r=1}^M(x_{k,\ell})^{2.0}(1.0-y_{k,\ell})}}{\sqrt{\sum_{r=1}^M\left(\sum_{i=1}^C(\pi_i)^{1.0-m}(u_{i,k})^mv_{i,r}(1.0-y_{k,r})\right)^{2.0}}},\\
+    u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-m}},\quad
+    v_{i}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k}}{||\sum_{k=1}^N (u_{i,k})^mx_{k}||_2},\\
+    %v_{i}=\frac{\sum_{k=1}^N(u_{i,k})^mx_{k}}{\quad\sum_{k=1}^N(u_{i,k})^{m}},\\
+    \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^md_{j,k}}{(u_{i,k})^md_{i,k}}\right)^{\frac{1.0}{m}}}.
+    %u_{i,k}&=\sum_{j=1}^C\frac{\pi_{i}}{\pi_{j}}\left(\frac{1-\T{x_k}v_{i}}{1-\T{x_{k}}v{j}}\right)^{\frac{1}{1-m}},\\
+    %\pi_{i}&=\frac{(\sum_{k=1}^N(u_{i,k})^{m}\T{x_k}v_{i})^\frac{1}{m}}{\quad\sum_{j=1}^C(\sum_{k=1}^N(u_{j,k})^{m}\T{x_k}v_{i})^\frac{1}{m}}.
+  \end{align*}
+  ref：\url{https://ieeexplore.ieee.org/document/956035/}\centering
+\end{frame}
+
+\subsection{TFIDF}
+\begin{frame}\frametitle{TFIDF}
+  \begin{block}{TF-IDF}
+    \begin{itemize}
+    \item tf$_{k,\ell}$：$k$番目の文書の$\ell$番目の単語の頻出回数
+    \item N：全文書数
+    \item Df$_{\ell}$：$\ell$番目の単語が出現する文書数
+    \end{itemize}
+    \begin{align*}
+      \text{TF}_{k,\ell}
+      &= \begin{cases}
+        1+\log{(\text{tf}_{k,\ell})}  & \text{tf$_{k,\ell} > 0$のとき} \\
+        0 & \text{それ以外のとき}
+      \end{cases}\\
+      \text{IDF}_{\ell}&=\log{(\frac{\text{N}}{\text{Df}_{\ell}})}\\
+      \text{TF.IDF}_{k,\ell}&=\text{TF}_{k,\ell} \times \text{IDF}_{\ell}
+    \end{align*}
+  \end{block}
+\end{frame}
+
+
+
+\subsection{LBM(Bernoulli)}
+\small
+\begin{frame}\frametitle{LBM(Bernoulli)~\small{(Latent Block Model)}}
+  \begin{block}{optimization problem}
+    $\underset{u,w,\pi,\rho,\alpha}{\text{maximize}}$
+    $\sum_{i=1}^{C^{row}}\sum_{j=1}^{C^{col}}\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}\log\left(\text{prob}(x_{k,\ell};\alpha_{i,j})\right)$\\
+    $+\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log{(\frac{\pi_i}{u_{i,k}})}+\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log{(\frac{\rho_{j}}{w_{i,\ell}})}$\centering\\
+    $\alpha_{i,j}\in \mathbb{R}^{C^{row}\times C^{col}},$ \text{ subject to } $\sum_{j=1}^{C^{col}} \rho_{j}=1 \text{ and } \sum_{j=1}^{C^{col}} w_{j,\ell}=1$\\
+  \end{block}
+  \text{Bernoulli : }$\text{prob}(x_{k,\ell};\alpha_{i,j})=(\alpha_{i,j})^{x_{k,\ell}}(1-(\alpha_{i,j})^{(1-x_{k,\ell})})$\centering
+  \begin{align*}
+    u_{i,k}&=\frac{\pi_i\exp\left(\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M
+      w_{j,\ell}x_{k,\ell}\log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+      +\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i,j})\right)}
+    {\sum_{i'=1}^{C^{row}} \pi_{i'}\exp\left(\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M
+      w_{j,\ell}x_{k,\ell}\log(\frac{\alpha_{i',j}}{1-\alpha_{i',j}})
+      +\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i',j})\right)},\\
+    w_{j,\ell}&=\frac{\rho_j\exp\left(\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}x_{k,\ell}\log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+      +\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j})\right)}
+    {\sum_{j'=1}^{C^{col}} \rho_{j'}\exp\left(\sum_{i=1}^{C^{row}}\sum_{k=1}^N
+      u_{i,k}x_{k,\ell}\log(\frac{\alpha_{i,j'}}{1-\alpha_{i,j'}})
+      +\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j'})\right)},\\
+    \pi_i&=\frac{1}{N}\sum_{k=1}^Nu_{i,k}\text{ , }\rho=\frac{1}{M}\sum_{\ell=1}^Mw_{j,\ell}\text{ , }
+    \alpha_{i,j}=\frac{\sum_{i=1}^N\sum_{j=1}^Mu_{i,k}w_{j,\ell}x_{k,\ell}}{\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}}
+  \end{align*}
+  %ref：\url{http://ieeexplore.ieee.org/document/944403/}\centering
+\end{frame}
+
+\begin{frame}
+  \begin{algorithm}[H]
+    \begin{algorithmic}[1]
+      \STATE initialize $u,w,\pi_i=\frac{1}{N}\sum_{k=1}^Nu_{i,k}\text{ , }\rho_j=\frac{1}{M}\sum_{\ell=1}^Mw_{j,\ell}$
+      \REPEAT
+      \STATE $s^{u}_{i,\ell}\in\mathbb{R}^{C^{row}\times M}=\sum_{k=1}^N u_{i,k} x_{k,\ell}$
+      \REPEAT
+      \STATE $w_{j,\ell}=\frac{\rho_j\exp\left(\sum_{i=1}^{C^{row}} s^{u}_{i,\ell}\log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+        +\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j})\right)}
+             {\sum_{j'=1}^{C^{col}} \rho_{j'}\exp\left(\sum_{i=1}^{C^{row}}s^{u}_{i,\ell}
+               \log(\frac{\alpha_{i,j'}}{1-\alpha_{i,j'}})
+               +\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j'})\right)}$
+             \STATE $\rho_j=\frac{1}{M}\sum_{\ell=1}^Mw_{j,\ell}$,\text{ , }$\alpha_{i,j}=\frac{\sum_{i=1}^N\sum_{j=1}^Mu_{i,k}w_{j,\ell}x_{k,\ell}}{\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}}$
+             \UNTIL{convergence \{$w,\rho,\alpha$\}}
+             \STATE $s^{w}_{j,k}\in\mathbb{R}^{C^{col}\times N}=\sum_{\ell=1}^M w_{j,\ell} x_{k,\ell}$
+             \REPEAT
+             \STATE $u_{i,k}=\frac{\pi_i\exp\left(\sum_{j=1}^{C^{col}}s^{w}_{j,k}
+               \log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+               +\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i,j})\right)}
+                    {\sum_{i'=1}^{C^{row}} \pi_{i'}\exp\left(\sum_{j=1}^{C^{col}}s^{w}_{j,k}
+                      \log(\frac{\alpha_{i',j}}{1-\alpha_{i',j}})
+                      +\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i',j})\right)}$
+                    \STATE $\pi_i=\frac{1}{N}\sum_{k=1}^Nu_{i,k}$\text{ , }$\alpha_{i,j}=\frac{\sum_{i=1}^N\sum_{j=1}^Mu_{i,k}w_{j,\ell}x_{k,\ell}}{\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}}$
+                    \UNTIL{convergence \{$u,\pi,\alpha$\}}
+                    \UNTIL{convergence \{$s^{u}\text{ , }s^{w}$}\}
+    \end{algorithmic}
+    \caption{LBM(Bernoulli)}
+  \end{algorithm}
+\end{frame}
+
+\subsection{FuzzyLBM(Bunomial)}
+\small
+\begin{frame}\frametitle{FuzzyLBM(Binomial)~\small{(Latent Block Model)}}
+  \begin{block}{optimization problem}
+    $\underset{u,w,\pi,\rho,\alpha}{\text{maximize}}$
+    $\sum_{i=1}^{C^{row}}\sum_{j=1}^{C^{col}}\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}\log\left(\text{prob}(x_{k,\ell};\alpha_{i,j})\right)$\\
+    $+\lambda_{1}^{-1}\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log{(\frac{\pi_i}{u_{i,k}})}
+    +\lambda_{2}^{-1}\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log{(\frac{\rho_{j}}{w_{i,\ell}})}$\centering\\
+  \end{block}
+  \text{Binomial : }$\text{prob}(x_{k,\ell};\alpha_{i,j})=\binom{n}{x_{k,\ell}}(\alpha_{i,j})^{x_{k,\ell}}(1-(\alpha_{i,j})^{(n-x_{k,\ell})})$\centering
+  \begin{align*}
+    u_{i,k}&=\frac{\pi_i\exp\left(\lambda_1\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M
+      w_{j,\ell}x_{k,\ell}\log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+      +n\lambda_1\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i,j})\right)}
+    {\sum_{i'=1}^{C^{row}} \pi_{i'}\exp\left(\lambda_1\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M
+      w_{j,\ell}x_{k,\ell}\log(\frac{\alpha_{i',j}}{1-\alpha_{i',j}})
+      +n\lambda_1\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i',j})\right)},\\
+    w_{j,\ell}&=\frac{\rho_j\exp\left(\lambda_2\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}x_{k,\ell}\log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+      +n\lambda_2\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j})\right)}
+    {\sum_{j'=1}^{C^{col}} \rho_{j'}\exp\left(\lambda_2\sum_{i=1}^{C^{row}}\sum_{k=1}^N
+      u_{i,k}x_{k,\ell}\log(\frac{\alpha_{i,j'}}{1-\alpha_{i,j'}})
+      +n\lambda_2\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j'})\right)},\\
+    \pi_i&=\frac{1}{N}\sum_{k=1}^Nu_{i,k}\text{ , }\rho=\frac{1}{M}\sum_{\ell=1}^Mw_{j,\ell}\text{ , }
+    \alpha_{i,j}=\frac{\sum_{i=1}^N\sum_{j=1}^Mu_{i,k}w_{j,\ell}x_{k,\ell}}{n\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}}
+  \end{align*}
+  %ref：\url{http://ieeexplore.ieee.org/document/944403/}\centering
+\end{frame}
+
+\begin{frame}
+  \begin{algorithm}[H]
+    \begin{algorithmic}[1]
+      \STATE initialize $u,w,\pi_i=\frac{1}{N}\sum_{k=1}^Nu_{i,k}\text{ , }\rho_j=\frac{1}{M}\sum_{\ell=1}^Mw_{j,\ell}$
+      \REPEAT
+      \STATE $s^{u}_{i,\ell}\in\mathbb{R}^{C^{row}\times M}=\sum_{k=1}^N u_{i,k} x_{k,\ell}$
+      \REPEAT
+      \STATE $w_{j,\ell}=\frac{\rho_j\exp\left(\lambda_2\sum_{i=1}^{C^{row}} s^{u}_{i,\ell}\log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+        +n\lambda_2\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j})\right)}
+             {\sum_{j'=1}^{C^{col}} \rho_{j'}\exp\left(\lambda_2\sum_{i=1}^{C^{row}}s^{u}_{i,\ell}
+               \log(\frac{\alpha_{i,j'}}{1-\alpha_{i,j'}})
+               +n\lambda_2\sum_{i=1}^{C^{row}}\sum_{k=1}^N u_{i,k}\log(1-\alpha_{i,j'})\right)}$
+             \STATE $\rho_j=\frac{1}{M}\sum_{\ell=1}^Mw_{j,\ell}\text{ , }\alpha_{i,j}=\frac{\sum_{i=1}^N\sum_{j=1}^Mu_{i,k}w_{j,\ell}x_{k,\ell}}{n\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}}$
+             \UNTIL{convergence \{$w,\rho,\alpha$\}}
+             \STATE $s^{w}_{j,k}\in\mathbb{R}^{C^{col}\times N}=\sum_{\ell=1}^M w_{j,\ell} x_{k,\ell}$
+             \REPEAT
+             \STATE $u_{i,k}=\frac{\pi_i\exp\left(\lambda_1\sum_{j=1}^{C^{col}}s^{w}_{j,k}
+               \log(\frac{\alpha_{i,j}}{1-\alpha_{i,j}})
+               +n\lambda_1\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i,j})\right)}
+                    {\sum_{i'=1}^{C^{row}} \pi_{i'}\exp\left(\lambda_1\sum_{j=1}^{C^{col}}s^{w}_{j,k}
+                      \log(\frac{\alpha_{i',j}}{1-\alpha_{i',j}})
+                      +n\lambda_1\sum_{j=1}^{C^{col}}\sum_{\ell=1}^M w_{j,\ell}\log(1-\alpha_{i',j})\right)}$
+                    \STATE $\pi_i=\frac{1}{N}\sum_{k=1}^Nu_{i,k}\text{ , }\alpha_{i,j}=\frac{\sum_{i=1}^N\sum_{j=1}^Mu_{i,k}w_{j,\ell}x_{k,\ell}}{n\sum_{k=1}^N\sum_{\ell=1}^Mu_{i,k}w_{j,\ell}}$
+                    \UNTIL{convergence \{$u,\pi,\alpha$\}}
+                    \UNTIL{convergence \{$s^{u}\text{ , }s^{w}$}\}
+    \end{algorithmic}
+    \caption{FuzzyLBM(Binomial)}
+  \end{algorithm}
+\end{frame}
+
+\end{document}
+
+

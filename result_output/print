@@ -1,0 +1,21 @@
+#!/bin/bash
+ls_i=($(ls -F | grep /))
+for i in ${ls_i[@]}; do
+    ls_j=($(ls -F ${i} | grep /))
+    var1=0
+    echo "-----"$i"-----"
+    for j in ${ls_j[@]}; do
+	file=$i$j"SparseBfcsaverageMaeFmeasureAuc.txt"
+	while read line
+	do
+	    auc=($line)
+	    var2=${auc[3]}
+	    x=$(echo "scale=0;if( $var1 < $var2 ) 1 else 0" | bc)
+	    if [ $x = 1 ] ; then
+		var1=$var2
+		echo $j ${auc[@]}
+	    fi
+	done < $file
+    done
+    echo "----------------"
+done
