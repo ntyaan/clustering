@@ -97,5 +97,8 @@ public:
 };
 //ARIの計算で使う組合せの関数
 double combination(int n, int k);
+//TFIDF
+void tfidf1(SparseMatrix &Data);
+void tfidf2(SparseMatrix &Data);
 
 #endif

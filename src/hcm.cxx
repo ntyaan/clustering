@@ -412,3 +412,57 @@ void HCM::print_frobenius_norm(void){
 	   <<std::endl;
   return;
 }
+
+void tfidf1(SparseMatrix &Data){
+  SparseMatrix TF(Data);
+  Vector IDF(Data.cols());
+  for(int k=0;k<Data.rows();k++){
+    double denominator=0.0;
+    for(int ell=0;ell<Data[k].essencialSize();ell++)
+      denominator+=Data[k].elementIndex(ell);
+    for(int ell=0;ell<Data[k].essencialSize();ell++)
+      TF[k].elementIndex(ell)=Data[k].elementIndex(ell)/denominator;
+  }
+  for(int ell=0;ell<Data.cols();ell++){
+    IDF[ell]=0.0;
+    double df=0.0;
+    for(int k=0;k<Data.rows();k++){
+      for(int r=0;r<Data[k].essencialSize();r++)
+	if(ell==Data[k].indexIndex(r)){
+	  df++;
+	  break;
+	}
+    }
+    IDF[ell]=log((double)Data.rows()/df);
+  }
+  for(int k=0;k<Data.rows();k++)
+    for(int ell=0;ell<Data[k].essencialSize();ell++)
+      Data[k].elementIndex(ell)
+	=TF[k].elementIndex(ell)*IDF[Data[k].indexIndex(ell)];
+  return;
+}
+
+void tfidf2(SparseMatrix &Data){
+  SparseMatrix TF(Data);
+  Vector IDF(Data.cols());
+  for(int k=0;k<Data.rows();k++)
+    for(int ell=0;ell<Data[k].essencialSize();ell++)
+      TF[k].elementIndex(ell)=1.0+log(Data[k].elementIndex(ell));
+  for(int ell=0;ell<Data.cols();ell++){
+    IDF[ell]=0.0;
+    double df=0.0;
+    for(int k=0;k<Data.rows();k++){
+      for(int r=0;r<Data[k].essencialSize();r++)
+	if(ell==Data[k].indexIndex(r)){
+	  df++;
+	  break;
+	}
+    }
+    IDF[ell]=log(1.0+(double)Data.rows()/df);
+  }
+  for(int k=0;k<Data.rows();k++)
+    for(int ell=0;ell<Data[k].essencialSize();ell++)
+      Data[k].elementIndex(ell)
+	=TF[k].elementIndex(ell)*IDF[Data[k].indexIndex(ell)];
+  return;
+}

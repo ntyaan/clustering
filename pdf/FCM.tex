@@ -160,10 +160,10 @@
   \begin{center}
     \begin{align*}
       d_{i,k}&=-\sum_{\ell=1}^M\log(w_{i,\ell})x_{k,\ell},\\
-      u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m_1}}},\quad
+      u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m}}},\quad
       %u_{i,k}&=\frac{\pi_i (-\sum_{\ell=1}^M \log{(w_{i,\ell})} x_{k,\ell})^{\frac{1}{1-m}}}{\sum_{j=1}^C \pi_j (-\sum_{\ell=1}^M \log{(w_{j,\ell})} x_{k,\ell})^{\frac{1}{1-m}}}\\
       w_{i,\ell}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k,\ell}}{\sum_{r=1}^M \sum_{k=1}^N (u_{i,k})^m x_{k,r}},\\
-      \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m_1}d_{j,k}}{(u_{i,k})^{m_1}d_{i,k}}\right)^{\frac{1.0}{m_1}}}.\\
+      \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m}d_{j,k}}{(u_{i,k})^{m}d_{i,k}}\right)^{\frac{1.0}{m}}}.\\
       %\pi_{i}&=\frac{(-\sum_{k=1}^N\sum_{\ell=1}^M (u_{i,k})^m \log{(w_{i,\ell}) x_{k,\ell}})^{\frac{1}{m}}}{\sum_{j=1}^C (-\sum_{k=1}^N\sum_{\ell=1}^M (u_{j,k})^m \log{(w_{j,\ell}) x_{k,\ell}})^{\frac{1}{m}}}\\
     \end{align*}
   \end{center}
@@ -196,7 +196,7 @@
     d_{i,k}&=-\sum_{\ell=1}^M\log(w_{i,\ell})x_{k,\ell},\\
     u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{1.0-\lambda(1.0-m)d_{j,k}}{1.0-\lambda(1.0-m)d_{i,k}}\right)^{\frac{1.0}{1.0-m}}},\quad
     %u_{i,k}=\frac{{\pi_i}(1+{\lambda}(1-m)\sum_{\ell=1}^M{\log{(w_{i,l})}}{x_{k,l}})^{\frac{1}{1-m}}}{\sum_{j=1}^C \pi_j (1+\lambda (1-m) \sum_{\ell=1}^M \log{(w_{j,\ell})} x_{k,\ell})^{\frac{1}{1-m}}},\\
-    w_{i,l}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k,\ell}}{\sum_{r=1}^M\sum_{k=1}^N(u_{i,k})^m x_{k,r}},\\
+    w_{i,\ell}=\frac{\sum_{k=1}^N (u_{i,k})^m x_{k,\ell}}{\sum_{r=1}^M\sum_{k=1}^N(u_{i,k})^m x_{k,r}},\\
     \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^m(1.0-\lambda(1.0-m)d_{j,k})}{(u_i,k)^m(1.0-\lambda(1.0-m)d_{i,k})}\right)^{\frac{1.0}{m}}}.\\
     %\pi_i&=\frac{(\sum_{k=1}^N (u_{i,k})^m (1+\lambda(1-m)\sum_{\ell=1}^M \log{(w_{i,\ell})}x_{k,l}))^\frac{1}{m}}{\sum_{j=1}^C (\sum_{k=1}^N (u_{j,k})^m(1+\lambda(1-m)\sum_{\ell=1}^M\log{(w_{j,\ell})}x_{k,\ell}))^\frac{1}{m}}.
   \end{align*}
@@ -212,9 +212,9 @@
   \begin{center}
     \begin{align*}
       d_{i,k}&=-\frac{1.0}{t}\sum_{\ell=1}^M\left((w_{i,\ell})^{t}-1.0\right)x_{k,\ell},\\
-      u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m_1}}},\quad
+      u_{i,k}&=\frac{1.0}{\sum_{j=1}^C\frac{\pi_{j}}{\pi_{i}}\left(\frac{d_{j,k}}{d_{i,k}}\right)^\frac{1.0}{1.0-{m}}},\quad
       w_{i,\ell}=\frac{1.0}{\sum_{r=1}^M\left(\sum_{k=1}^N\frac{(u_{i,k})^m x_{k,r}}{(u_{i,k})^m x_{k,\ell}}\right)^{\frac{1.0}{1.0-t}}},\\
-      \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m_1}d_{j,k}}{(u_{i,k})^{m_1}d_{i,k}}\right)^{\frac{1.0}{m_1}}}.\\
+      \pi_{i}&=\frac{1.0}{\sum_{j=1}^C\left(\sum_{k=1}^N\frac{(u_{j,k})^{m}d_{j,k}}{(u_{i,k})^{m}d_{i,k}}\right)^{\frac{1.0}{m}}}.\\
       %\pi_{i}&=\frac{(-\sum_{k=1}^N\sum_{\ell=1}^M (u_{i,k})^m \log{(w_{i,\ell}) x_{k,\ell}})^{\frac{1}{m}}}{\sum_{j=1}^C (-\sum_{k=1}^N\sum_{\ell=1}^M (u_{j,k})^m \log{(w_{j,\ell}) x_{k,\ell}})^{\frac{1}{m}}}\\
     \end{align*}
   \end{center}
@@ -334,31 +334,59 @@
   ref\url{https://link.springer.com/chapter/10.1007/978-3-319-23240-9_10}
 \end{frame}
 
-\subsection{QPCS}
-\begin{frame}\frametitle{QPCS}%\scriptsizeTsallis Entropy-regularized q-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
+\subsection{TPCS}
+\begin{frame}\frametitle{TPCS}%\scriptsizeTsallis Entropy-regularized q-divergence based Fuzzy $c$-means with variables controlling cluster sizes)}
   \begin{block}{optimization problem}
     $\underset{u,v}{\text{minimize}}$
     $\sum_{k=1}^N(u_{1,k})^m(1-\T{x_k}v_1)+\frac{\lambda^{-1}}{m-1}\sum_{k=1}^N\left((u_{1,k})^m-u_{1,k}\right)-\alpha\sum_{k=1}u_{1,k}$\centering\\
   \end{block}
   \begin{align*}
     d_{1,k}&=1.0-\T{x_k}v_1,\\
-   u_{1,k}&=\left(\frac{1.0-\lambda(1.0-m)d_{1,k}}{1.0+\alpha\lambda(1.0-m^{-1})}\right)^{\frac{1.0}{1.0-m}},\quad
+   u_{1,k}&=\left(\frac{1.0-\lambda(1.0-m)d_{1,k}}{m^{-1.0}\left(1.0-\alpha\lambda(1.0-m)\right)}\right)^{\frac{1.0}{1.0-m}},\quad
    v_{1}=\frac{\sum_{k=1}^N (u_{1,k})^m x_{k}}{||\sum_{k=1}^N (u_{1,k})^mx_{k}||_2},\\
   \end{align*}
 \end{frame}
-%\subsection{qFCCM(仮)}
-%\begin{frame}\frametitle{qFCCM(仮)}
-%  \begin{block}{optimization problem}
-%    $\underset{u,w,\pi}{\text{maximize}}~J_{qFCCM}$\\
-%    $J_{qFCCM}=\sum_{i=1}^C\sum_{k=1}^N(\pi_i)^{1-m}(u_{i,k})^m(\frac{1}{(m-1)(m-2)}\sum_{\ell=1}^M(x_{k,\ell})^{2-m}(1-(w_{i,\ell})^{m-1}))$\\$+\frac{\lambda^{-1}}{1-m}\sum_{i=1}^C\sum_{k=1}^N (\pi_i)^{1-m}(u_{i,k})^m$\centering 	%\raggedleft
-%  \end{block}
-%  $s_{i,k}=\frac{1}{(m-1)(m-2)}\sum_{l=1}^M(x_{k,\ell})^{2-m}(1-(w_{i,\ell})^{m-1})$\centering\\
-%  \begin{align*}
-%    u_{i,k}&=\frac{\pi_i(1+\lambda(1-m)s_{i,k})^{\frac{1}{1-m}}}{\sum_{j=1}^C\pi_{j}(1+\lambda(1-m)s_{j,k})^{\frac{1}{1-m}}},
-%    w_{i,\ell}=\frac{(\sum_{k=1}^N (u_{i,k})^m (x_{k,\ell})^{2-m})^{\frac{1}{2-m}}}{\sum_{r=1}^M (\sum_{k=1}^N (u_{i,k})^m (x_{k,r})^{2-m})^{\frac{1}{2-m}}},\\
-%    \pi_i&=\frac{(\sum_{k=1}^N (u_{i,k})^m(1+\lambda(1-m) s_{i,k}))^{\frac{1}{m}}}{\sum_{j=1}^C (\sum_{k=1}^N (u_{j,k})^m(1+\lambda(1-m) s_{j,k}))^{\frac{1}{m}}}.\\
-%  \end{align*}
-%\end{frame}
+
+\subsection{BPCCM}
+\begin{frame}\frametitle{BPCCM}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $-\sum_{k=1}^N\sum_{\ell=1}^M(u_{1,k})^m\left(\log(w_{1,\ell})x_{k,\ell}-\log(\Gamma(x_{k,\ell}+1))\right)-\alpha\sum_{k=1}^N(1-u_{1,k})^m$ \centering\\
+  \end{block}
+  \begin{center}
+    \begin{align*}
+      d_{1,k}&=-\left(\log(w_{1,\ell})x_{k,\ell}-\log(\Gamma(x_{k,\ell}+1.0))\right),\\
+      u_{1,k}&=\frac{1.0}{1.0+\left(\frac{md_{1,k}}{\alpha}\right)^{\frac{1.0}{m-1.0}}},\quad
+      w_{1,\ell}=\frac{\sum_{k=1}^N (u_{1,k})^m x_{k,\ell}}{\sum_{r=1}^M \sum_{k=1}^N (u_{1,k})^m x_{k,r}},\\
+    \end{align*}
+  \end{center}
+\end{frame}
+
+\subsection{EPCCM}
+\begin{frame}\frametitle{EPCCM}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $-\sum_{k=1}^Nu_{1,k}\left(\log(w_{1,\ell})x_{k,\ell}-\log(\Gamma(x_{k,\ell}+1))\right)+\lambda^{-1}\sum_{k=1}^Nu_{1,k}\log(u_{1,k})-\alpha\sum_{k=1}^Nu_{1,k}$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{1,k}&=-\left(\log(w_{1,\ell})x_{k,\ell}-\log(\Gamma(x_{k,\ell}+1.0))\right),\\
+    u_{1,k}&=\exp(\lambda(\alpha-d_{1,k})-1.0),\quad
+    w_{1,\ell}=\frac{\sum_{k=1}^N u_{1,k}x_{k,\ell}}{\sum_{r=1}^M\sum_{k=1}^N u_{1,k}x_{k,r}},\\
+  \end{align*}
+\end{frame}
+
+\subsection{TPCCM}
+\begin{frame}\frametitle{TPCCM}
+  \begin{block}{optimization problem}
+    $\underset{u,v}{\text{minimize}}$
+    $-\sum_{k=1}^N(u_{1,k})^m\left(\log(w_{1,\ell})x_{k,\ell}-\log(\Gamma(x_{k,\ell}+1))\right)+\frac{\lambda^{-1}}{m-1}\sum_{k=1}^N\left((u_{1,k})^m-u_{1,k}\right)-\alpha\sum_{k=1}u_{1,k}$\centering\\
+  \end{block}
+  \begin{align*}
+    d_{1,k}&=-\left(\log(w_{1,\ell})x_{k,\ell}-\log(\Gamma(x_{k,\ell}+1.0))\right),\\
+    u_{1,k}&=\left(\frac{1.0-\lambda(1.0-m)d_{1,k}}{m^{-1.0}\left(1.0-\alpha\lambda(1.0-m)\right)}\right)^{\frac{1.0}{1.0-m}},\quad
+    w_{1,\ell}=\frac{\sum_{k=1}^N (u_{1,k})^m x_{k,\ell}}{\sum_{r=1}^M\sum_{k=1}^N(u_{1,k})^m x_{k,r}},\\
+  \end{align*}
+\end{frame}
 
 \subsection{KLFCCMP}
 \begin{frame}\frametitle{KLFCCMP}
