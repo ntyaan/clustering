@@ -5,9 +5,9 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  //  "SphericalData";
-  "tfidf1-SphericalData";
-  //"tfidf2-SphericalData";
+  //"SphericalData";
+  //"tfidf1-SphericalData";
+  "tfidf2-SphericalData";
 
 int main(void){
   std::string c_p = current_path();
@@ -43,7 +43,7 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    tfidf1(Data);
+    tfidf2(Data);
     Matrix CorrectMembership(centers_number, data_number);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership
@@ -110,9 +110,9 @@ int main(void){
 	  double diff_p=max_norm(test.tmp_clusters_size()-test.clusters_size());
 	  //全体の収束具合
 	  double diff=diff_u+diff_v+diff_p;
-	  diff=savediff;
+	  savediff=diff;
 	  //収束したらクラスタリング終了
-	  if(diff<DIFF_FOR_STOP)break;
+	  if(diff<DIFF_FOR_STOP) break;
 	  if(test.iterates()>=MAX_ITERATES)break;
 	  test.iterates()++;
 	  if(std::isnan(diff)){

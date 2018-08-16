@@ -373,7 +373,7 @@ void HCM::initialize_membership(std::string file){
   return;
 }
 void HCM::ofs_selected_data(std::string text){
-  std::ofstream ofs(text,std::ios::app);
+  std::ofstream ofs(text+"/object.txt",std::ios::app);
   if(!ofs){
     std::cerr<<"ファイルオープン失敗\n";
     exit(1);

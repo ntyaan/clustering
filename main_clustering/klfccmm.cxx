@@ -5,12 +5,12 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  //  "SimplexData";
-  "tfidf1-SimplexData";
-  //"tfidf2-SimplexData";
+  //"SimplexData";
+  //"tfidf1-SimplexData";
+  "tfidf2-SimplexData";
 
 int main(void){
-  std::string c_p = current_path();
+  std::string c_p = current_path();			
   for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
@@ -43,7 +43,7 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    tfidf1(Data);
+    tfidf2(Data);
     Matrix CorrectMembership(centers_number, data_number);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership

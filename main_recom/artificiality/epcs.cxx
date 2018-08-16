@@ -4,6 +4,7 @@
 //収束条件
 #define MAX_ITE 1000
 #define DIFF_FOR_STOP 1.0E-10
+
 //ユーザ数
 const int user_number=return_user_number();
 //アイテム数
@@ -19,125 +20,86 @@ const std::string METHOD_NAME="EPCS";
 constexpr int clusters_number=1;
 
 int main(void){
-  std::string c_p = current_path();
-  c_p = c_p + "/../../RESULT";
-  //RESULTフォルダを作る
-  mkdir(c_p.c_str(),0755);
-  //RESULT下に手法名＋データ名＋最大欠損数という名のフォルダを作る
-  const std::string d=
-    c_p+"/"+METHOD_NAME
-    +"_"+data_name+std::to_string(MAX_KESSON);
-  mkdir(d.c_str(),0755);
+  std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //Recomクラスの生成
   Recom recom(user_number, item_number,
-	      clusters_number, clusters_number, MAX_KESSON);
-  //SparseAfccmdクラスの生成
-  for(double l=60;l<=100;l+=10){
+	      clusters_number, clusters_number, KESSON);
+  recom.method_name()=METHOD_NAME;
+  for(double lambda=60;lambda<=100;lambda+=10){
     for(double alpha=0.0001;alpha<=0.1;alpha*=10){
       //時間計測
       auto start=std::chrono::system_clock::now();
       EPCS test(item_number, user_number,
-		clusters_number, l, alpha);
-      //有効数字5桁で表示
-      std::ostringstream oss2, oss3;
-      oss2<<std::setprecision(15)<<l;
-      oss3<<std::setprecision(15)<<alpha;
-      std::string fuzzifier2(oss2.str());
-      std::string fuzzifier3(oss3.str());
-      const std::string dir=d+"/"+METHOD_NAME+"_"
-	+std::string(fuzzifier2)+"_"
-	+std::string(fuzzifier3);
-      //データ名，パラメータ，クラスタ数ごとにフォルダ作成
-      mkdir(dir.c_str(),0755);
+		clusters_number, lambda, alpha);
+      std::vector<double> parameter= {lambda};
+      std::vector<std::string> dir
+	= Mkdir(parameter, clusters_number, dirs);
       //データ入力
-      std::ifstream ifs(InputDataName);
-      if(!ifs){
-	std::cerr << "DirectoryName: could not open." << std::endl;
-	exit(1);
-      }
-      for(int cnt=0;cnt<user_number;cnt++){
-	int essencialSize;
-	ifs >> essencialSize;
-	SparseVector dummy(item_number, essencialSize);
-	for(int ell=0;ell<essencialSize;ell++){
-	  ifs >> dummy.indexIndex(ell) >> dummy.elementIndex(ell);
-	}
-	recom.sparsecorrectdata(cnt)=dummy;
-      }
-      ifs.close();
-      //欠損数ループ
-      for(int miss=KIZAMI;miss<=MAX_KESSON;miss+=KIZAMI){
-	//シード値の初期化
-	recom.Seed();
-	double mae=0.0,fmeasure=0.0;
-	//欠損のさせ方ループ
-	for(recom.current()=0;recom.current()
-	      <MISSINGTRIALS;recom.current()++){
-	  std::cout<<"cause missing values:"
-		   <<recom.current()<<std::endl;
-	  //シード値の保存
-	  recom.Seed2(recom.current());
-	  //シード値の初期化
-	  recom.Seed();
-	  recom.reset();
-	  //データを欠損
-	  recom.revise_missing_values(miss);
-	  //データをtestに渡す
-	  test.copydata(recom.sparseincompletedata());
-	  //spherical用にデータを正規化する
-	  test.ForSphericalData();
-	  //ユーザ数分クラスタリングし，N*Nの帰属度を得る
-	  for(int k=0;k<user_number;k++){
-	    //変数初期化
-	    test.reset();
-	    //可能性クラスクラスタリング初期クラスタ中心
-	    test.initialize_centers_one_cluster(k);
-	    //クラスタリングループ数
-	    test.iterates()=0;
-	    while(1){
-	      test.revise_dissimilarities();
-	      test.revise_membership();
-	      test.revise_centers();
-	      double diff_v
-		=max_norm(test.tmp_centers()-test.centers());
-	      double diff_u
-		=max_norm(test.tmp_membership()-test.membership());
-	      double diff=diff_u+diff_v;
-	      if(std::isnan(diff)){
-		std::cout<<"diff is nan \t"
-			 <<l<<" "<<alpha<<std::endl;
-		test.reset();
-		exit(1);
-	      }
-	      if(diff<DIFF_FOR_STOP)break;
-	      if(test.iterates()>=MAX_ITE)break;
-	      test.iterates()++;
+      recom.input(InputDataName);
+      //欠損数
+      recom.missing()=KESSON;
+      //シード値の初期化
+      recom.Seed();
+      //欠損のさせ方ループ
+      for(recom.current()=0;recom.current()
+	    <MISSINGTRIALS;recom.current()++){
+	//初期化
+	recom.reset();
+	//データを欠損
+	recom.revise_missing_values();
+	//データをtestに渡す
+	test.copydata(recom.sparseincompletedata());
+	test.ForSphericalData();
+	//ユーザ数分クラスタリングし，N*Nの帰属度を得る
+	for(int k=0;k<user_number;k++){
+	  //変数初期化
+	  test.reset();
+	  //可能性クラスクラスタリング初期クラスタ中心
+	  test.initialize_centers_one_cluster(k);
+	  //クラスタリングループ数
+	  test.iterates()=0;
+	  while(1){
+	    test.revise_dissimilarities();
+	    test.revise_membership();
+	    test.revise_centers();
+	    double diff_v
+	      =max_norm(test.tmp_centers()-test.centers());
+	    double diff_u
+	      =max_norm(test.tmp_membership()-test.membership());
+	    double diff=diff_u+diff_v;
+	    if(std::isnan(diff)){
+	      std::cout<<"diff is nan \t"
+		       <<lambda<<" "<<alpha<<std::endl;
+	      test.reset();
+	      exit(1);
 	    }
-	    //目的関数値の計算
-	    test.set_objective();
-	    //帰属度保存
-	    test.save_membebrship(k);
+	    if(diff<DIFF_FOR_STOP)break;
+	    if(test.iterates()>=MAX_ITE)break;
+	    test.iterates()++;
 	  }
-	  //PCM＋ピアソン相関係数の計算
-	  recom.pearsonsim_for_pcm(test.membership_pcm(),
-				   test.membership_threshold());
-	  //grouplens計算
-	  recom.pearsonpred2(miss);
-	  //MAEの計算，保存
-	  mae+=recom.MAE(miss,dir+"/"+METHOD_NAME+"MAE.txt");
-	  //F-measureの計算
-	  fmeasure+=recom.F_measure(miss,35,dir+"/"
-				    +METHOD_NAME+"Fmeasure.txt");
+	  //帰属度保存
+	  test.save_membebrship(k);
 	}
-	//AUC，MAE，F-measureの平均を計算，出力
-	recom.mae_f_out(dir+"/"+METHOD_NAME+"averageMaeFmeasureAuc.txt",
-			mae, fmeasure, miss);
+	//PCM＋ピアソン相関係数の計算
+	recom.pearsonsim_for_pcm(test.membership_pcm(),
+				 test.membership_threshold());
+	//grouplens計算
+	recom.pearsonpred2();
+	recom.mae(dir[0], 0);
+	recom.fmeasure(dir[0], 0);
+	recom.roc(dir[0]);
+	recom.obje(recom.Ccurrent())=-1;
+	recom.ofs_objective(dir[0]);
+	test.ofs_selected_data(dir[0]);
+	recom.choice_mae_f(dir);
       }//number of missing values
+      //AUC，MAE，F-measureの平均を計算，出力
+      recom.precision_summury(dir);
       //計測終了
       auto end=std::chrono::system_clock::now();
       auto endstart=end-start;
-      std::string dirname=dir
-	+"_"+std::to_string
+      std::string time="_"
+	+std::to_string
 	(std::chrono::duration_cast<std::chrono::hours>(endstart).count())
 	+"h"+std::to_string
 	(std::chrono::duration_cast<std::chrono::minutes>(endstart).count()%60)
@@ -145,10 +107,8 @@ int main(void){
 	(std::chrono::duration_cast<std::chrono::seconds>(endstart).count()%60)
 	+"s";
       //計測時間でリネーム
-      if(rename(dir.c_str(),dirname.c_str())==0)
-	std::cout<<"rename\n";
-      else
-	std::cout<<"rename 失敗\n";
+      for(int i=0;i<(int)dir.size();i++)
+	rename(dir[i].c_str(), (dir[i]+time).c_str());
     }//alpha
   }//lambda
   return 0;

@@ -8,13 +8,13 @@ QFCS::QFCS(int dimension,
   HCM(dimension, data_number, centers_number),
   HCMA(dimension, data_number, centers_number),
   HCS(dimension, data_number, centers_number),
-  QFCM(dimension, data_number, centers_number
-       ,fuzzifierEm, fuzzifierLambda){
+  QFCM(dimension, data_number, centers_number,
+       fuzzifierEm, fuzzifierLambda){
 }
 
 void QFCS::revise_centers(void){
 #ifdef CHECK_CLASS
-  std::cout<<"QFCS::centers"<<Std::endl;
+  std::cout<<"QFCS::centers"<<std::endl;
 #endif
   Tmp_Centers=Centers;
   for(int i=0;i<centers_number();i++){

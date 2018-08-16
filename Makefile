@@ -112,9 +112,6 @@ hccmm.o : src/hccmm.cxx
 	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
 
 #推薦システム人工データ
-artificiality_firefly.out : main_recom/artificiality/firefly.cxx
-	$(CXX) $(CXXFLAGS) $(objects) src/recom.cxx $^ \
-	-DARTIFICIALITY $(FS) -o $@
 artificiality_grouplens.out : main_recom/artificiality/grouplens.cxx
 	$(CXX) $(CXXFLAGS) $(objects) src/recom.cxx $^ \
 	-DARTIFICIALITY $(FS) -o $@
@@ -134,6 +131,11 @@ artificiality_qfcs.out : main_recom/artificiality/qfcs.cxx
 	src/recom.cxx src/klfcm.cxx src/bfcm.cxx \
 	src/qfcm.cxx src/qfcs.cxx $^ \
 	-DARTIFICIALITY $(FS) -o $@
+artificiality_bfccm.out : main_recom/artificiality/bfccm.cxx
+	$(CXX) $(CXXFLAGS) \
+	$(hccm) \
+	src/recom.cxx src/bfcm.cxx src/bfccm.cxx $^ \
+	-DARTIFICIALITY $(FS) -o $@
 artificiality_klfccm.out : main_recom/artificiality/klfccm.cxx
 	$(CXX) $(CXXFLAGS) \
 	$(hccm) \
@@ -144,6 +146,11 @@ artificiality_qfccm.out : main_recom/artificiality/qfccm.cxx
 	$(hccm) \
 	src/recom.cxx src/klfcm.cxx src/bfcm.cxx \
 	src/qfcm.cxx src/qfccm.cxx $^ \
+	-DARTIFICIALITY $(FS) -o $@
+artificiality_bfccmm.out : main_recom/artificiality/bfccmm.cxx
+	$(CXX) $(CXXFLAGS) \
+	$(hccmm) \
+	src/recom.cxx src/bfcm.cxx src/bfccmm.cxx $^ \
 	-DARTIFICIALITY $(FS) -o $@
 artificiality_klfccmm.out : main_recom/artificiality/klfccmm.cxx
 	$(CXX) $(CXXFLAGS) \
@@ -164,9 +171,6 @@ artificiality_epcs.out : main_recom/artificiality/epcs.cxx
 	-DARTIFICIALITY $(FS) -o $@
 
 #推薦システム実データ
-firefly.out : main_recom/firefly.cxx
-	$(CXX) $(CXXFLAGS) $(objects) src/recom.cxx $^ \
-	$(DATASET) $(FS) -o $@
 grouplens.out : main_recom/grouplens.cxx
 	$(CXX) $(CXXFLAGS) $(objects) src/recom.cxx $^ \
 	$(DATASET) $(FS) -o $@
