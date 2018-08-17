@@ -297,15 +297,21 @@ void Recom::ofs_objective(std::string dir){
   return;
 }
 
-void Recom::choice_mae_f(std::vector<std::string> dir){
-  //最小目的関数値をとる番号を得る
+int Recom::min_objective_index(void){
+  double tmp=DBL_MAX; int obje_index=0;
+  for(int i=0;i<CLUSTERINGTRIALS;i++)
+    if(tmp>Obje[i]){
+      tmp=Obje[i];
+      obje_index=i;
+    }
+  return obje_index;
+}
+  
+void Recom::choice_mae_f(std::vector<std::string> dir, int p){
+  int obje_index=0;
+  if(p==1)
+    obje_index=min_objective_index();
   for(int method=0;method<(int)dir.size();method++){
-    double tmp=DBL_MAX; int obje_index=0;
-    for(int i=0;i<CLUSTERINGTRIALS;i++)
-      if(tmp>Obje[i]){
-	tmp=Obje[i];
-	obje_index=i;
-      }
     choiceMAE[method][Current]=resultMAE[method][obje_index];
     choiceFmeasure[method][Current]=resultFmeasure[method][obje_index];
     //選ばれたROCをchoiceフォルダに移す
@@ -384,8 +390,9 @@ void Recom::precision_summury(std::vector<std::string> dir){
     }
     double sumMAE=0.0,sumF=0.0;
     for(int i=0;i<MISSINGTRIALS;i++){
-      sumMAE+=resultMAE[method][i];
+      sumMAE+=choiceMAE[method][i];
       sumF+=choiceFmeasure[method][i];
+      std::cout<<sumMAE<<std::endl;
     }
     std::ofstream ofs(dir[method]+"/averageMaeFmeasureAuc.txt", std::ios::app);
     if(!ofs)

@@ -5,13 +5,13 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  //  "SphericalData";
-  "tfidf1-SphericalData";
+  "SphericalData";
+  //"tfidf1-SphericalData";
   //"tfidf2-SphericalData";
 
 int main(void){
   std::string c_p = current_path();
-  for(int INDEX=5;INDEX<(int)centers.size();INDEX++){
+  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
     //読み込むデータファイル

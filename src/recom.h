@@ -89,7 +89,8 @@ protected:
   //Seedとか保存
   void ofs_objective(std::string);
   //選ばれたクラスタリング初期値によるMAE,Fmeasureの欠損させ方数平均
-  void choice_mae_f(std::vector<std::string>);
+  int min_objective_index(void);
+  void choice_mae_f(std::vector<std::string>, int p=1);
   //maeとfmeasure出力:人工データ用
   void save_mae_f(std::vector<std::string>);
   void out_mae_f(std::vector<std::string>);

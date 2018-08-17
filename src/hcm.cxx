@@ -349,6 +349,7 @@ void HCM::initialize_centers(int random_index){
   return;
 }
 
+//推薦用人工データ
 void HCM::initialize_membership(std::string file){
   std::ifstream ifs(file);
   if(!ifs){
@@ -365,13 +366,13 @@ void HCM::initialize_membership(std::string file){
 	  /(centers_number()-1.0);
     }
   }
-  
   if(centers_number()==4)
     for(int i=0;i<centers_number();i++)
       for(int k=80;k<data_number();k++)
 	Membership[i][k]=1.0/centers_number();
   return;
 }
+
 void HCM::ofs_selected_data(std::string text){
   std::ofstream ofs(text+"/object.txt",std::ios::app);
   if(!ofs){

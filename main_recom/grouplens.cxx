@@ -29,7 +29,7 @@ int main(void){
     //初期化
     recom.reset();
     //データを欠損
-    recom.revise_missing_values();	
+    recom.revise_missing_values();
     //FIREFLY Methodで予測
     recom.reset2();
     recom.pearsonsim();
@@ -42,7 +42,7 @@ int main(void){
     recom.mae(dirs[1], 1);
     recom.fmeasure(dirs[1], 1);
     recom.roc(dirs[1]);
-    recom.choice_mae_f(dirs);
+    recom.choice_mae_f(dirs, 0);
   }
   //AUC，MAE，F-measureの平均を計算，出力
   recom.precision_summury(dirs);
