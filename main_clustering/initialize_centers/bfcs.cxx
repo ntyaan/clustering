@@ -1,20 +1,23 @@
-#include"../src/bfccmm.h"
-#include"data_doc.h"
+#include"../../src/bfcs.h"
+#include"../data_doc.h"
 
 //収束条件
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  //"SimplexData";
-  //"tfidf1-SimplexData";
-  "tfidf2-SimplexData";
+  "SphericalData";
+//"tfidf1-SphericalData";
+//"tfidf2-SphericalData";
 constexpr int PARAMETER = 5;
+constexpr int INIT_CENTERS = 10;
 
 int main(void){
   std::string c_p = current_path();
+  std::ofstream ofs_ari("ARI-BFCS-"+method+"_init_centers.txt", std::ios::app);
   for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
+    std::cout<<files[INDEX]<<std::endl;
     //読み込むデータファイル
     std::string filenameData 
       =c_p+"/../../data/"+files[INDEX]+"/sparse_"+files[INDEX]+".txt";
@@ -44,8 +47,11 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    tfidf2(Data);
-    Matrix CorrectMembership(centers_number, data_number);
+    //tfidf1(Data);
+    //ARIテキスト書き込み
+    std::ofstream ofs("ARI-BFCS-"+method+"-"+file+".txt", std::ios::app);
+    double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
+    BFCS test(data_dimension, data_number, centers_number, 0);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership
       (filenameCorrectCrispMembership);
@@ -54,44 +60,25 @@ int main(void){
 		<< "could not open." << std::endl;
       exit(1);
     }
-    //正解clustersize
-    Vector C(centers_number);
     //読み込んだ正解の帰属度を格納
-    for(int i=0;i<centers_number;i++){
-      C[i]=0;
-      for(int k=0;k<data_number;k++){
-	ifs_correctCrispMembership >> CorrectMembership[i][k];
-	//正解の帰属度を与える
-	if(CorrectMembership[i][k]==1)
-	  C[i]++;
-      }
-    }
+    for(int i=0;i<centers_number;i++)
+      for(int k=0;k<data_number;k++)
+	ifs_correctCrispMembership >> test.correctCrispMembership(i,k);
     ifs_correctCrispMembership.close();
-    //ARIテキスト書き込み
-    std::ofstream ofs("ARI-BFCCMM-"+method+"-"+file+".txt", std::ios::app);
-    double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
-    double Parameter2[PARAMETER]={1.0E-6, 1.0E-4, 0.01, 0.1, 0.5};
-    BFCCMM test(data_dimension, data_number, centers_number, 0, 0);
     //データを与える
     test.copydata(Data);
-    test.ForMMMData();
+    test.ForSphericalData();
+    double average_ari=-1.0, sd=0.0, params0=0.0, min_obje_ari=0.0;
     for(int index=0;index<PARAMETER;index++){
-      for(int index2=0;index2<PARAMETER;index2++){
-	test.fuzzifierEm()=Parameter[index];
-	test.fuzzifierEt()=Parameter2[index2];
-	//ファジィな正解帰属度を与える
-	for(int i=0;i<centers_number;i++){
-	  //初期クラスタサイズ調整変数
-	  test.clusters_size(i)=(double)C[i]/(double)data_number;
-	  for(int k=0;k<data_number;k++){
-	    test.correctCrispMembership(i,k)=CorrectMembership[i][k];
-	    if(test.correctCrispMembership(i, k)==0)
-	      test.membership(i,k)
-		=((centers_number-1.0)/100.0)/(centers_number-1.0);
-	    else
-	      test.membership(i,k)=1.0-(centers_number-1.0)/100.0;
-	  }
-	}
+      test.fuzzifierEm()=Parameter[index];
+      std::vector<double> ARIs(INIT_CENTERS);
+      int FALSE=0, Index=0; double sumARI=0.0, min_objective=DBL_MAX;
+      for(int ite=0;ite<INIT_CENTERS;ite++){
+	test.reset();
+	//初期クラスタサイズ調整変数
+	test.initialize_clustersize();
+	//初期クラスタ中心
+	test.initialize_centers(ite+FALSE);
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	//更新式ループ回数
@@ -99,9 +86,9 @@ int main(void){
 	int p=1;
 	double savediff=0.0;
 	while(1){
-	  test.revise_centers();
 	  test.revise_dissimilarities();
 	  test.revise_membership();
+	  test.revise_centers();
 	  test.revise_clusters_size();
 	  //帰属度の収束具合
 	  double diff_u=max_norm(test.tmp_membership()-test.membership());
@@ -117,25 +104,23 @@ int main(void){
 	  if(test.iterates()>=MAX_ITERATES)break;
 	  test.iterates()++;
 	  if(std::isnan(diff)){
+	    FALSE++;
+	    ite--;
 	    p=-1;
 	    break;
 	  }
 	}
 	if(p==1){
-	  std::cout<<"loop:"<<test.iterates()<<"\n";
+	  //std::cout<<"loop:"<<test.iterates()<<"\n";
 	  test.set_crispMembership();
 	  test.set_contingencyTable();
-	  std::cout << "Contingency Table:\n"
-		    << test.contingencyTable()
-		    << std::endl;
-	  std::cout << "ARI:" << test.ARI()
-		    << std::endl;
+	  test.set_objective();
+	  ARIs[ite]=test.ARI();
 	  //計測終了
 	  auto end=std::chrono::system_clock::now();
 	  auto endstart=end-start;
 	  ofs<<test.fuzzifierEm()<<"\t"
-	     <<test.fuzzifierEt()<<"\t"
-	     <<test.ARI()<<"\t"
+	     <<ARIs[ite]<<"\t"
 	     <<savediff<<"\t"
 	     <<test.iterates()<<"\t"
 	     <<std::chrono::duration_cast
@@ -143,18 +128,41 @@ int main(void){
 	     <<std::chrono::duration_cast
 	    <std::chrono::minutes>(endstart).count()%60<<":"
 	     <<std::chrono::duration_cast
-	    <std::chrono::seconds>(endstart).count()%60<<std::endl;
+	    <std::chrono::seconds>(endstart).count()%60<<"\t";
+	  for(int j=0;j<test.initialize_c().size();j++)
+	    ofs<<test.initialize_c()[j]<<" ";
+	  ofs<<std::endl;
+	  if(min_objective<test.objective()){
+	    Index=ite;
+	    min_objective=test.objective();
+	  }
+	  sumARI+=ARIs[ite];
 	}
 	else
 	  ofs<<test.fuzzifierEm()<<"\t"
-	     <<test.fuzzifierEt()<<"\t"
 	     <<"nan\t"
 	     <<savediff<<"\t"
 	     <<test.iterates()<<std::endl;
-	test.reset();
+      }
+      sumARI/=(double)INIT_CENTERS;
+      double s=0.0;
+      for(int j=0;j<INIT_CENTERS;j++)
+	s+=pow(ARIs[j]-sumARI,2.0);
+      if(sumARI>average_ari){
+	average_ari=sumARI;
+	sd=sqrt(s/(double)INIT_CENTERS);
+        params0=test.fuzzifierEm();
+	min_obje_ari=ARIs[Index];
       }
     }
     ofs.close();
+    ofs_ari<<files[INDEX]<<std::endl
+	   <<"bFCS    & "<< average_ari
+	   << " & " << sd
+	   << " & " << min_obje_ari
+	   << " & $m=" << params0
+	   << "$ \\\\\\hline" <<std::endl;
   }
+  ofs_ari.close();
   return 0;
 }

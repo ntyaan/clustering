@@ -8,6 +8,7 @@ std::string method=
   "SphericalData";
   //"tfidf1-SphericalData";
   //"tfidf2-SphericalData";
+constexpr int PARAMETER = 5;
 
 int main(void){
   std::string c_p = current_path();
@@ -68,12 +69,13 @@ int main(void){
     ifs_correctCrispMembership.close();
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-BFCS-"+method+"-"+file+".txt", std::ios::app);
-    double Parameter[5]={1.00001, 1.0001, 1.001, 1.01, 1.1};
+    double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
     BFCS test(data_dimension, data_number, centers_number, 0);
-    for(int index=0;index<5;index++){
+    //データを与える
+    test.copydata(Data);
+    test.ForSphericalData();
+    for(int index=0;index<PARAMETER;index++){
       test.fuzzifierEm()=Parameter[index];
-      //データを与える
-      test.copydata(Data);
       //ファジィな正解帰属度を与える
       for(int i=0;i<centers_number;i++){
 	//初期クラスタサイズ調整変数
@@ -89,7 +91,6 @@ int main(void){
       }
       //時間計測
       auto start=std::chrono::system_clock::now();
-      test.ForSphericalData();
       //更新式ループ回数
       test.iterates()=0;
       int p=1;

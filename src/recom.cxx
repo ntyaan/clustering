@@ -392,7 +392,6 @@ void Recom::precision_summury(std::vector<std::string> dir){
     for(int i=0;i<MISSINGTRIALS;i++){
       sumMAE+=choiceMAE[method][i];
       sumF+=choiceFmeasure[method][i];
-      std::cout<<sumMAE<<std::endl;
     }
     std::ofstream ofs(dir[method]+"/averageMaeFmeasureAuc.txt", std::ios::app);
     if(!ofs)

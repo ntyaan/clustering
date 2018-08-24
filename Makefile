@@ -293,6 +293,45 @@ clustering_bfccmm.out : $(bfccmm) main_clustering/bfccmm.cxx
 clustering_qfccmm.out : $(qfccmm) main_clustering/qfccmm.cxx
 	$(CXX) $(CXXFLAGS) $^ \
 	$(MACRO)$(FS) -o $@
+
+#クラスタリング実データ
+init_centers_clustering_klfcs.out : $(klfcs) \
+main_clustering/initialize_centers/klfcs.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_bfcs.out : $(bfcs) \
+main_clustering/initialize_centers/bfcs.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_qfcs.out : $(qfcs) \
+main_clustering/initialize_centers/qfcs.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_klfccm.out : $(klfccm) \
+main_clustering/initialize_centers/klfccm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_bfccm.out : $(bfccm) \
+main_clustering/initialize_centers/bfccm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_qfccm.out : $(qfccm) \
+main_clustering/initialize_centers/qfccm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_klfccmm.out : $(klfccmm) \
+main_clustering/initialize_centers/klfccmm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_bfccmm.out : $(bfccmm) \
+main_clustering/initialize_centers/bfccmm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+init_centers_clustering_qfccmm.out : $(qfccmm) \
+main_clustering/initialize_centers/qfccmm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(MACRO)$(FS) -o $@
+
 clean :
 	rm -f *.out
 clean.o :

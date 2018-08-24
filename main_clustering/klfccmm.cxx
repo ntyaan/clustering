@@ -8,6 +8,7 @@ std::string method=
   //"SimplexData";
   //"tfidf1-SimplexData";
   "tfidf2-SimplexData";
+constexpr int PARAMETER = 5;
 
 int main(void){
   std::string c_p = current_path();			
@@ -68,15 +69,16 @@ int main(void){
     ifs_correctCrispMembership.close();
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-KLFCCMM-"+method+"-"+file+".txt", std::ios::app);
-    double Parameter[5]={0.5, 1.0, 10, 100, 1000};
-    double Parameter2[5]={1.0E-6, 1.0E-4, 0.01, 0.1, 0.5};
+    double Parameter[PARAMETER]={0.5, 1.0, 10, 100, 1000};
+    double Parameter2[PARAMETER]={1.0E-6, 1.0E-4, 0.01, 0.1, 0.5};
     KLFCCMM test(data_dimension, data_number, centers_number, 0, 0);
-    for(int index=0;index<5;index++){
-      for(int index2=0;index2<5;index2++){
+    //データを与える
+    test.copydata(Data);
+    test.ForMMMData();
+    for(int index=0;index<PARAMETER;index++){
+      for(int index2=0;index2<PARAMETER;index2++){
 	test.fuzzifierLambda()=Parameter[index];
 	test.fuzzifierEt()=Parameter2[index2];
-	//データを与える
-	test.copydata(Data);
 	//ファジィな正解帰属度を与える
 	for(int i=0;i<centers_number;i++){
 	  //初期クラスタサイズ調整変数
@@ -92,7 +94,6 @@ int main(void){
 	}
 	//時間計測
 	auto start=std::chrono::system_clock::now();
-	test.ForMMMData();
 	//更新式ループ回数
 	test.iterates()=0;
 	int p=1;

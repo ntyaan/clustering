@@ -94,6 +94,7 @@ public:
   void ofs_selected_data(std::string text);
   //データをもらう
   void copydata(const SparseMatrix &arg1);
+  Vector initialize_c(void) const;
 };
 //ARIの計算で使う組合せの関数
 double combination(int n, int k);

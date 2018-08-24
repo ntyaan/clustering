@@ -400,6 +400,10 @@ void HCM::copydata(const SparseMatrix &arg1){
   return;
 }
 
+Vector HCM::initialize_c(void) const{
+  return InitializeC;
+}
+
 void HCM::print_frobenius_norm(void){
   std::cout<<"membership_frobenius_norm:"
 	   <<std::setprecision(50)
