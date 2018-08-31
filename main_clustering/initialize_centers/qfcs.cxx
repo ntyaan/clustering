@@ -7,14 +7,14 @@
 std::string method=
   //"SphericalData";
   //"tfidf1-SphericalData";
-"tfidf2-SphericalData";
+  "tfidf2-SphericalData";
 constexpr int PARAMETER = 5;
 constexpr int INIT_CENTERS = 10;
 
 int main(void){
   std::string c_p = current_path();
   std::ofstream ofs_ari("ARI-QFCS-"+method+"_init_centers.txt", std::ios::app);
-  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
+  for(int INDEX=6;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
     std::cout<<files[INDEX]<<std::endl;
@@ -104,7 +104,10 @@ int main(void){
 	    savediff=diff;
 	    //収束したらクラスタリング終了
 	    if(diff<DIFF_FOR_STOP)break;
-	    if(test.iterates()>=MAX_ITERATES)break;
+	    if(test.iterates()>=MAX_ITERATES){
+	      FALSE=INIT_CENTERS;
+	      break;
+	    }
 	    test.iterates()++;
 	    if(std::isnan(diff)){
 	      FALSE++;
@@ -113,8 +116,13 @@ int main(void){
 	      break;
 	    }
 	  }
-	  if(FALSE>10)
+	  if(FALSE>=INIT_CENTERS){
+	    ofs<<"FALSE\t"
+	       <<test.fuzzifierLambda()<<"\t"
+	       <<test.fuzzifierEm()<<"\t"
+	       <<test.iterates()<<std::endl;
 	    break;
+	  }
 	  if(p==1){
 	    //std::cout<<"loop:"<<test.iterates()<<"\n";
 	    test.set_crispMembership();
@@ -176,4 +184,3 @@ int main(void){
   ofs_ari.close();
   return 0;
 }
-

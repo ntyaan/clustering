@@ -101,7 +101,10 @@ int main(void){
 	  savediff=diff;
 	  //収束したらクラスタリング終了
 	  if(diff<DIFF_FOR_STOP)break;
-	  if(test.iterates()>=MAX_ITERATES)break;
+	  if(test.iterates()>=MAX_ITERATES){
+	    FALSE=INIT_CENTERS;
+	    break;
+	  }
 	  test.iterates()++;
 	  if(std::isnan(diff)){
 	    FALSE++;
@@ -110,8 +113,12 @@ int main(void){
 	    break;
 	  }
 	}
-	if(FALSE>10)
+	if(FALSE>=INIT_CENTERS){
+	  ofs<<"FALSE\t"
+	     <<test.fuzzifierLambda()<<"\t"
+	     <<test.iterates()<<std::endl;
 	  break;
+	}
 	if(p==1){
 	  //std::cout<<"loop:"<<test.iterates()<<"\n";
 	  test.set_crispMembership();
