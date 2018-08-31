@@ -14,7 +14,7 @@ constexpr int INIT_CENTERS = 10;
 int main(void){
   std::string c_p = current_path();
   std::ofstream ofs_ari("ARI-BFCS-"+method+"_init_centers.txt", std::ios::app);
-  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
+  for(int INDEX=6;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
     std::cout<<files[INDEX]<<std::endl;
@@ -110,6 +110,8 @@ int main(void){
 	    break;
 	  }
 	}
+	if(FALSE>10)
+	  break;
 	if(p==1){
 	  //std::cout<<"loop:"<<test.iterates()<<"\n";
 	  test.set_crispMembership();

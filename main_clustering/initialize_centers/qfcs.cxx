@@ -5,9 +5,9 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  "SphericalData";
-//"tfidf1-SphericalData";
-//"tfidf2-SphericalData";
+  //"SphericalData";
+  //"tfidf1-SphericalData";
+"tfidf2-SphericalData";
 constexpr int PARAMETER = 5;
 constexpr int INIT_CENTERS = 10;
 
@@ -47,7 +47,7 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    //tfidf1(Data);
+    tfidf2(Data);
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-QFCS-"+method+"-"+file+".txt", std::ios::app);
     double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
@@ -113,6 +113,8 @@ int main(void){
 	      break;
 	    }
 	  }
+	  if(FALSE>10)
+	    break;
 	  if(p==1){
 	    //std::cout<<"loop:"<<test.iterates()<<"\n";
 	    test.set_crispMembership();
@@ -143,7 +145,8 @@ int main(void){
 	    sumARI+=ARIs[ite];
 	  }
 	  else
-	    ofs<<test.fuzzifierEm()<<"\t"
+	    ofs<<test.fuzzifierLambda()<<"\t"
+	       <<test.fuzzifierEm()<<"\t"
 	       <<"nan\t"
 	       <<savediff<<"\t"
 	       <<test.iterates()<<std::endl;

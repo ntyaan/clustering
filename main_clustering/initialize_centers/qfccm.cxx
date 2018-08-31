@@ -143,7 +143,8 @@ int main(void){
 	    sumARI+=ARIs[ite];
 	  }
 	  else
-	    ofs<<test.fuzzifierEm()<<"\t"
+	    ofs<<test.fuzzifierLambda()<<"\t"
+	       <<test.fuzzifierEm()<<"\t"
 	       <<"nan\t"
 	       <<savediff<<"\t"
 	       <<test.iterates()<<std::endl;

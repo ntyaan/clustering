@@ -113,6 +113,8 @@ int main(void){
 	      break;
 	    }
 	  }
+	  if(FALSE>10)
+	    break;
 	  if(p==1){
 	    //std::cout<<"loop:"<<test.iterates()<<"\n";
 	    test.set_crispMembership();
@@ -144,6 +146,7 @@ int main(void){
 	  }
 	  else
 	    ofs<<test.fuzzifierEm()<<"\t"
+	       <<test.fuzzifierEt()<<"\t"
 	       <<"nan\t"
 	       <<savediff<<"\t"
 	       <<test.iterates()<<std::endl;

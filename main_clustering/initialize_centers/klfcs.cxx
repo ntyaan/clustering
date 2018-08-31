@@ -5,9 +5,9 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  "SphericalData";
+  //"SphericalData";
 //"tfidf1-SphericalData";
-//"tfidf2-SphericalData";
+"tfidf2-SphericalData";
 constexpr int PARAMETER = 5;
 constexpr int INIT_CENTERS = 10;
 
@@ -47,7 +47,7 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    //tfidf1(Data);
+    tfidf2(Data);
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-KLFCS-"+method+"-"+file+".txt", std::ios::app);
     double Parameter[PARAMETER]={0.5, 1.0, 10, 100, 1000};
@@ -110,6 +110,8 @@ int main(void){
 	    break;
 	  }
 	}
+	if(FALSE>10)
+	  break;
 	if(p==1){
 	  //std::cout<<"loop:"<<test.iterates()<<"\n";
 	  test.set_crispMembership();
