@@ -14,7 +14,7 @@ constexpr int INIT_CENTERS = 10;
 int main(void){
   std::string c_p = current_path();
   std::ofstream ofs_ari("ARI-KLFCCMM-"+method+"_init_centers.txt", std::ios::app);
-  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
+  for(int INDEX=12;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
     std::cout<<files[INDEX]<<std::endl;

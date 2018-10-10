@@ -14,6 +14,10 @@ double &PCM::alpha(void){
   return Alpha;
 }
 
+double &PCM::beta(void){
+  return Beta;
+}
+
 void PCM::initialize_centers_one_cluster(int index){
   for(int ell=0;ell<dimension();ell++)
     Centers[0][ell]=0.0;

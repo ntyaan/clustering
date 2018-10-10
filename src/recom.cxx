@@ -43,6 +43,10 @@ Matrix Recom::kessonindex(void) const{
   return KessonIndex;
 }
 
+Matrix Recom::similarity(void) const{
+  return Similarity;
+}
+
 double Recom::similarity(int index1, int index2){
   return Similarity[index1][index2];
 }
@@ -837,6 +841,19 @@ void Recom::pearsonpred2(void){
     }
     if(std::isnan(Prediction[index]))
       Prediction[index]=0.0;
+  }
+  return;
+}
+
+void Recom::filtering_similarities(void){
+  for(int user1=0;user1<return_user_number();user1++){
+    int tmpcenternum=0;
+    for(int i=0;i<Mem.rows();i++)
+      if(Mem[i][user1]==1.0)
+	tmpcenternum=i;
+    for(int user2=0;user2<return_user_number();user2++)
+      if(Mem[tmpcenternum][user2]==0)
+	Similarity[user1][user2]=0.0;
   }
   return;
 }

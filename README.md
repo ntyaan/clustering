@@ -1,6 +1,11 @@
 # 更新履歴
 
-## 2018/0824
+## 2018/10/10
+関係性データのためのクラスタリング手法brfcm,erfcm,qrfcmを追加
+
+[https://www.fujipress.jp/jaciii/jc/jacii002200010034/](https://www.fujipress.jp/jaciii/jc/jacii002200010034/)
+
+## 2018/08/24
 
 クラスタリング手法比較のためのmain追加
 

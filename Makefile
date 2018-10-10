@@ -34,12 +34,16 @@ klfccmm = $(klfccm) .o/hccmm.o .o/klfccmm.o
 bfccmm = $(bfccm) .o/hccmm.o .o/bfccmm.o
 qfccmm = $(qfccm) .o/hccmm.o .o/qfccmm.o
 epcs = $(klfcs) .o/pcm.o .o/epcs.o
+erfcm = $(objects) .o/hcm.o .o/hcma.o .o/klfcm.o .o/rfcm.o .o/erfcm.o
+brfcm = $(objects) .o/hcm.o .o/hcma.o .o/bfcm.o .o/rfcm.o .o/brfcm.o
+qrfcm = $(objects) .o/hcm.o .o/hcma.o \
+.o/klfcm.o .o/bfcm.o .o/qfcm.o .o/rfcm.o .o/qrfcm.o
 
 method_all = $(all) \
 $(klfcs) $(bfcs) $(qfcs) \
 $(klfccm) $(bfccm) $(qfccm) \
 $(klfccmm) $(bfccmm) $(qfccmm) \
-$(epcs) \
+$(epcs) $(erfcm) $(brfcm) $(qrfcm) \
 artificiality_grouplens.out \
 artificiality_klfcs.out \
 artificiality_bfcs.out \
@@ -61,6 +65,9 @@ klfccmm.out \
 bfccmm.out \
 qfccmm.out \
 epcs.out \
+erfcm.out \
+brfcm.out \
+qrfcm.out \
 clustering_artificiality_klfcs.out \
 clustering_artificiality_bfcs.out \
 clustering_artificiality_qfcs.out \
@@ -114,6 +121,8 @@ method_all : $(method_all)
 	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
 .o/pcm.o : src/pcm.cxx
 	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
+.o/rfcm.o : src/rfcm.cxx
+	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
 .o/klfcm.o : src/klfcm.cxx
 	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
 .o/klfcs.o : src/klfcs.cxx
@@ -139,6 +148,12 @@ method_all : $(method_all)
 .o/qfccmm.o : src/qfccmm.cxx
 	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
 .o/epcs.o : src/epcs.cxx
+	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
+.o/erfcm.o : src/erfcm.cxx
+	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
+.o/brfcm.o : src/brfcm.cxx
+	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
+.o/qrfcm.o : src/qrfcm.cxx
 	$(CXX) $(CXXFLAGS) $(MACRO)-c $^ -o $@
 
 #推薦システム人工データ
@@ -186,6 +201,18 @@ artificiality_epcs.out : $(epcs) src/recom.cxx \
 main_recom/artificiality/epcs.cxx
 	$(CXX) $(CXXFLAGS) $^ \
 	-DARTIFICIALITY $(FS) -o $@
+artificiality_erfcm.out : $(erfcm) src/recom.cxx \
+main_recom/artificiality/erfcm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	-DARTIFICIALITY $(FS) -o $@
+artificiality_brfcm.out : $(brfcm) src/recom.cxx \
+main_recom/artificiality/brfcm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	-DARTIFICIALITY $(FS) -o $@
+artificiality_qrfcm.out : $(qrfcm) src/recom.cxx \
+main_recom/artificiality/qrfcm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	-DARTIFICIALITY $(FS) -o $@
 
 #推薦システム実データ
 grouplens.out : $(objects) src/recom.cxx main_recom/grouplens.cxx
@@ -219,6 +246,15 @@ qfccmm.out : $(qfccmm) src/recom.cxx main_recom/qfccmm.cxx
 	$(CXX) $(CXXFLAGS) $^ \
 	$(DATASET)$(MACRO)$(FS) -o $@
 epcs.out : $(epcs) src/recom.cxx main_recom/epcs.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(DATASET)$(MACRO)$(FS) -o $@
+brfcm.out : $(brfcm) src/recom.cxx main_recom/brfcm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(DATASET)$(MACRO)$(FS) -o $@
+erfcm.out : $(erfcm) src/recom.cxx main_recom/erfcm.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(DATASET)$(MACRO)$(FS) -o $@
+qrfcm.out : $(qrfcm) src/recom.cxx main_recom/qrfcm.cxx
 	$(CXX) $(CXXFLAGS) $^ \
 	$(DATASET)$(MACRO)$(FS) -o $@
 

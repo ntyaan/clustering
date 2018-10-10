@@ -21,7 +21,7 @@ const std::string METHOD_NAME="QFCCMM";
 int main(void){
   std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=2;clusters_number<=7;clusters_number++){
+  for(int clusters_number=2;clusters_number<=8;clusters_number++){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);

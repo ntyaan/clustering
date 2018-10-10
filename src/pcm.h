@@ -5,7 +5,7 @@
 
 class PCM: virtual public HCM{
 protected:
-  double Alpha;
+  double Alpha,Beta;
   Vector Membership_Threshold;
   Matrix Membership_PCM;
 public:
@@ -14,6 +14,7 @@ public:
       int centers_number,
       double alpha);
   double &alpha(void);
+  virtual double &beta(void);
   void initialize_centers_one_cluster(int);
   void ofs_membership(void);
   Matrix membership_pcm(void);

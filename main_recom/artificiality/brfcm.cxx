@@ -1,27 +1,29 @@
-#include"../src/recom.h"
-#include"../src/bfccm.h"
+#include"../../src/recom.h"
+#include"../../src/brfcm.h"
 
 //収束条件
 #define MAX_ITE 1000
 #define DIFF_FOR_STOP 1.0E-10
-
 //ユーザ数
 const int user_number=return_user_number();
 //アイテム数
 const int item_number=return_item_number();
 //データの名前
 const std::string data_name=return_data_name();
+//正解のクリスプ帰属度ファイル名
+const std::string correctcrisp
+="data/2018/artificiality_100_100_correctCrispMembership.txt";
 //入力するデータの場所
 const std::string InputDataName="data/2018/sparse_"+data_name
   +"_"+std::to_string(user_number)
   +"_"+std::to_string(item_number)+".txt";
 //クラスタリング手法名
-const std::string METHOD_NAME="BFCCM";
+const std::string METHOD_NAME="BRFCM";
 
 int main(void){
-  std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
+  std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=2;clusters_number<=8;clusters_number++){
+  for(int clusters_number=4;clusters_number<=6;clusters_number++){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
@@ -29,48 +31,41 @@ int main(void){
     for(double m=1.0001;m<=1.001;m+=0.0003){
       //時間計測
       auto start=std::chrono::system_clock::now();
-      BFCCM test(item_number, user_number, 
+      //ユーザ数×ユーザ数
+      BRFCM test(user_number, user_number, 
 		 clusters_number, m);
       std::vector<double> parameter= {m};
       std::vector<std::string> dir
 	= Mkdir(parameter, clusters_number, dirs);
       //データ入力
       recom.input(InputDataName);
-      //欠損数
-      recom.missing()=KESSON;
-      //シード値の初期化
-      recom.Seed();
-      //欠損のさせ方ループ
-      for(recom.current()=0;recom.current()
-	    <MISSINGTRIALS;recom.current()++){
-	//初期化
-	recom.reset();
-	//データを欠損
-	recom.revise_missing_values();
-	//データをtestに渡す
-	test.copydata(recom.sparseincompletedata());
-	//MMM用にデータを正規化する
-	test.ForMMMData();	
-	//選んだデータがNanになったときシード値変更変数
-	int ForBadChoiceData=0;
-	//クラスタリングの初期値の与え方ループ
-	for(recom.Ccurrent()=0;recom.Ccurrent()
-	      <CLUSTERINGTRIALS;recom.Ccurrent()++){
-	  std::cout<<"initial setting for clustering:"
-		   <<recom.Ccurrent()<<std::endl;
+      //欠損数ループ
+      for(recom.missing()=KIZAMI;
+	  recom.missing()<=KESSON;recom.missing()+=KIZAMI){
+	//シード値の初期化
+	recom.Seed();
+	//欠損のさせ方ループ
+	for(recom.current()=0;recom.current()
+	      <MISSINGTRIALS;recom.current()++){
+	  //初期化
+	  recom.reset();
+	  //データを欠損
+	  recom.revise_missing_values();
+	  //相関係数計算
+	  recom.pearsonsim();
+	  //データ(相関係数)をtestに渡す
+	  test.copy_similarities(recom.similarity());
 	  test.reset();
 	  //初期クラスタサイズ調整変数の設定
 	  test.initialize_clustersize();
-	  //初期クラスタ中心の設定
-	  test.initialize_centers(recom.Ccurrent()+ForBadChoiceData);
+	  //初期帰属度の設定
+	  test.initialize_membership(correctcrisp);
 	  //クラスタリングループ数
 	  test.iterates()=0;
-	  //nanが出た時の回避で使う
-	  int p=1;
 	  while(1){
+	    test.revise_centers();
 	    test.revise_dissimilarities();
 	    test.revise_membership();
-	    test.revise_centers();
 	    test.revise_clusters_size();
 	    double diff_v
 	      =max_norm(test.tmp_centers()-test.centers());
@@ -80,45 +75,35 @@ int main(void){
 	      =max_norm(test.tmp_clusters_size()-test.clusters_size());
 	    double diff=diff_u+diff_v+diff_p;
 	    if(std::isnan(diff)){
-	      std::cout<<"diff is nan"<<std::endl;
+	      std::cout<<"diff is nan \t"
+		       <<m<<"\tC:"<<clusters_number<<std::endl;
 	      test.reset();
-	      recom.Ccurrent()--;p=0;
-	      ForBadChoiceData++;
-	      break;
+	      exit(1);
 	    }
 	    if(diff<DIFF_FOR_STOP)break;
 	    if(test.iterates()>=MAX_ITE)break;
 	    test.iterates()++;
 	  }
-	  if(p){
-	    //目的関数値の計算
-	    test.set_objective();
-	    //recomに目的関数値を渡す
-	    recom.obje(recom.Ccurrent())=test.objective();
-	    //recomに帰属度を渡してクリスプ化
-	    recom.crisp(test.membership(),test.centers());
-	    //クラスタリング＋ピアソン相関係数の計算
-	    //GroupLen Methodで予測
-	    recom.reset2();
-	    recom.pearsonsim_clustering();
-	    recom.pearsonpred2();
-	    recom.mae(dir[0], 0);
-	    recom.fmeasure(dir[0], 0);
-	    recom.roc(dir[0]);
-	    recom.ofs_objective(dir[0]);
-	    test.ofs_selected_data(dir[0]);
-	    //共クラスタリング
-	    recom.reset2();
-	    recom.revise_prediction();
-	    recom.mae(dir[1], 1);
-	    recom.fmeasure(dir[1], 1);
-	    recom.roc(dir[1]);
-	  }
-	}//initilal setting for clustering
-	recom.choice_mae_f(dir);
+	  //目的関数値の計算
+	  test.set_objective();
+	  //recomに目的関数値を渡す
+	  recom.obje(recom.Ccurrent())=test.objective();
+	  //recomに帰属度を渡してクリスプ化
+	  recom.crisp(test.membership(),test.centers());
+	  //クラスタリング＋ピアソン相関係数の計算
+	  //GroupLen Methodで予測
+	  recom.reset2();
+	  //アクティブユーザと同クラスタに属すユーザのみ計算に使用
+	  recom.filtering_similarities();
+	  recom.pearsonpred2();
+	  recom.mae(dir[0], 0);
+	  recom.fmeasure(dir[0], 0);
+	  recom.ofs_objective(dir[0]);
+	  test.ofs_selected_data(dir[0]);
+	  recom.save_mae_f(dir);
+	}
+	recom.out_mae_f(dir);
       }
-      //AUC，MAE，F-measureの平均を計算，出力
-      recom.precision_summury(dir);
       //計測終了
       auto end=std::chrono::system_clock::now();
       auto endstart=end-start;

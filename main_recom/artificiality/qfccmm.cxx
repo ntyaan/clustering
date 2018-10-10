@@ -20,7 +20,6 @@ const std::string InputDataName="data/2018/sparse_"+data_name
 //クラスタリング手法名
 const std::string METHOD_NAME="QFCCMM";
 
-
 int main(void){
   std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
   //クラスタ数でループ

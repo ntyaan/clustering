@@ -1,5 +1,5 @@
 #include"../src/recom.h"
-#include"../src/bfccm.h"
+#include"../src/brfcm.h"
 
 //収束条件
 #define MAX_ITE 1000
@@ -16,10 +16,10 @@ const std::string InputDataName="data/2018/sparse_"+data_name
   +"_"+std::to_string(user_number)
   +"_"+std::to_string(item_number)+".txt";
 //クラスタリング手法名
-const std::string METHOD_NAME="BFCCM";
+const std::string METHOD_NAME="BRFCM";
 
 int main(void){
-  std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
+  std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
   for(int clusters_number=2;clusters_number<=8;clusters_number++){
     //Recomクラスの生成
@@ -29,7 +29,8 @@ int main(void){
     for(double m=1.0001;m<=1.001;m+=0.0003){
       //時間計測
       auto start=std::chrono::system_clock::now();
-      BFCCM test(item_number, user_number, 
+      //ユーザ数×ユーザ数
+      BRFCM test(user_number, user_number, 
 		 clusters_number, m);
       std::vector<double> parameter= {m};
       std::vector<std::string> dir
@@ -47,10 +48,10 @@ int main(void){
 	recom.reset();
 	//データを欠損
 	recom.revise_missing_values();
-	//データをtestに渡す
-	test.copydata(recom.sparseincompletedata());
-	//MMM用にデータを正規化する
-	test.ForMMMData();	
+	//相関係数計算
+	recom.pearsonsim();
+	//データ(相関係数)をtestに渡す
+	test.copy_similarities(recom.similarity());	
 	//選んだデータがNanになったときシード値変更変数
 	int ForBadChoiceData=0;
 	//クラスタリングの初期値の与え方ループ
@@ -62,7 +63,7 @@ int main(void){
 	  //初期クラスタサイズ調整変数の設定
 	  test.initialize_clustersize();
 	  //初期クラスタ中心の設定
-	  test.initialize_centers(recom.Ccurrent()+ForBadChoiceData);
+	  test.centersInitializePlusPlus(recom.Ccurrent()+ForBadChoiceData);
 	  //クラスタリングループ数
 	  test.iterates()=0;
 	  //nanが出た時の回避で使う
@@ -100,19 +101,14 @@ int main(void){
 	    //クラスタリング＋ピアソン相関係数の計算
 	    //GroupLen Methodで予測
 	    recom.reset2();
-	    recom.pearsonsim_clustering();
+	    //アクティブユーザと同クラスタに属すユーザのみ計算に使用
+	    recom.filtering_similarities();
 	    recom.pearsonpred2();
 	    recom.mae(dir[0], 0);
 	    recom.fmeasure(dir[0], 0);
 	    recom.roc(dir[0]);
 	    recom.ofs_objective(dir[0]);
 	    test.ofs_selected_data(dir[0]);
-	    //共クラスタリング
-	    recom.reset2();
-	    recom.revise_prediction();
-	    recom.mae(dir[1], 1);
-	    recom.fmeasure(dir[1], 1);
-	    recom.roc(dir[1]);
 	  }
 	}//initilal setting for clustering
 	recom.choice_mae_f(dir);
