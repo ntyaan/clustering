@@ -37,13 +37,15 @@ int main(void){
       recom.pearsonpred1();
       recom.mae(dirs[0], 0);
       recom.fmeasure(dirs[0], 0);
+      recom.save_roc_for_artificiality(dirs[0]);
       recom.reset2();
       recom.pearsonpred2();
       recom.mae(dirs[1], 1);
       recom.fmeasure(dirs[1], 1);
+      recom.save_roc_for_artificiality(dirs[1]);
       recom.save_mae_f(dirs);
     }
-    recom.out_mae_f(dirs);
+    recom.precision_summury(dirs);
   }
   //計測終了
   auto end=std::chrono::system_clock::now();

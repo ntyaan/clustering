@@ -63,6 +63,7 @@ int main(void){
 	  //初期クラスタサイズ調整変数の設定
 	  test.initialize_clustersize();
 	  //初期クラスタ中心の設定
+	  //test.initialize_centers(recom.Ccurrent()+ForBadChoiceData);
 	  test.centersInitializePlusPlus(recom.Ccurrent()+ForBadChoiceData);
 	  //クラスタリングループ数
 	  test.iterates()=0;

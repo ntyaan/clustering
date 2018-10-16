@@ -93,6 +93,7 @@ protected:
   int min_objective_index(void);
   void choice_mae_f(std::vector<std::string>, int p=1);
   //maeとfmeasure出力:人工データ用
+  void save_roc_for_artificiality(std::string dir);
   void save_mae_f(std::vector<std::string>);
   void out_mae_f(std::vector<std::string>);
   //AUCの計算，text1に読み込むROCファイル，text2に平均AUCを保存

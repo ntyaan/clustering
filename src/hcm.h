@@ -88,6 +88,8 @@ public:
   void initialize_centers(int random_index);
   //初期帰属度に正解の帰属度を
   void initialize_membership(std::string);
+  void initialize_membership2(void);
+  void initialize_centers2(int method);
   //HCMとSparseHCMで同じ結果か確認用
   void print_frobenius_norm(void);
   //初期値として選ばれたデータやその他出力

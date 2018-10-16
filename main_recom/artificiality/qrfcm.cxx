@@ -10,9 +10,6 @@ const int user_number=return_user_number();
 const int item_number=return_item_number();
 //データの名前
 const std::string data_name=return_data_name();
-//正解のクリスプ帰属度ファイル名
-const std::string correctcrisp
-="data/2018/artificiality_100_100_correctCrispMembership.txt";
 //入力するデータの場所
 const std::string InputDataName="data/2018/sparse_"+data_name
   +"_"+std::to_string(user_number)
@@ -28,8 +25,8 @@ int main(void){
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.0001;m<=1.001;m+=0.0003){
-      for(double lambda=1.0;lambda<=1000;lambda*=10){
+    for(double m=1.30;m<=1.51;m+=0.10){
+      for(double lambda=1.0;lambda<=8.0;lambda*=2.0){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	//ユーザ数×ユーザ数
@@ -60,7 +57,7 @@ int main(void){
 	    //初期クラスタサイズ調整変数の設定
 	    test.initialize_clustersize();
 	    //初期帰属度の設定
-	    test.initialize_membership(correctcrisp);
+	    test.initialize_membership2();
 	    //クラスタリングループ数
 	    test.iterates()=0;
 	    while(1){
@@ -99,11 +96,12 @@ int main(void){
 	    recom.pearsonpred2();
 	    recom.mae(dir[0], 0);
 	    recom.fmeasure(dir[0], 0);
+	    recom.save_roc_for_artificiality(dir[0]);
 	    recom.ofs_objective(dir[0]);
 	    test.ofs_selected_data(dir[0]);
 	    recom.save_mae_f(dir);
 	  }
-	  recom.out_mae_f(dir);
+	  recom.precision_summury(dir);
 	}
 	//計測終了
 	auto end=std::chrono::system_clock::now();

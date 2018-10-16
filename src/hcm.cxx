@@ -360,16 +360,85 @@ void HCM::initialize_membership(std::string file){
     for(int k=0;k<data_number();k++){
       ifs>>CorrectCrispMembership[i][k];
       if(CorrectCrispMembership[i][k])
-	Membership[i][k]=1.0-(centers_number()-1.0)/100;
+	Membership[i][k]
+	  =1.0-(centers_number()-1.0)/100.0;
       else
-	Membership[i][k]=((centers_number()-1.0)/100.0)
-	  /(centers_number()-1.0);
+	Membership[i][k]=1.0/100.0;/*((centers_number()-1.0)/100.0)
+			   /(centers_number()-1.0)*/;
     }
   }
   if(centers_number()==4)
     for(int i=0;i<centers_number();i++)
       for(int k=80;k<data_number();k++)
 	Membership[i][k]=1.0/centers_number();
+  return;
+}
+
+void HCM::initialize_membership2(void){
+  /*
+    std::mt19937_64 mt;
+    mt.seed(0);
+    std::normal_distribution<> dist(1.0/100.0, 1.0/1000.0);
+  */
+  for(int k=0;k<data_number();k++){
+    /*
+      double sum=0.0;
+      std::vector<double> tmp(centers_number()-1);
+      for(int i=0;i<centers_number()-1;i++){
+      tmp[i]=dist(mt);
+      sum+=tmp[i];
+      }
+      int j=0;
+    */
+    for(int i=0;i<centers_number();i++){
+      if(k%centers_number()==i)
+	Membership[i][k]=1.0-(centers_number()-1.0)/100.0;//-sum;
+      else{
+	Membership[i][k]=1.0/100.0;//+tmp[j];
+	//j++;
+      }
+    }
+  }
+  //std::cout<<Membership<<std::endl;
+  //exit(1);
+  return;
+}
+
+void HCM::initialize_centers2(int method){
+  if(centers_number()<4 || centers_number()>6){
+    std::cout<<"centers_number error"<<std::endl;
+    exit(1);
+  }
+  for(int ell=0;ell<20;ell++){
+    Centers[0][ell]=1.0;Centers[0][20+ell]=2.0;
+    Centers[0][40+ell]=3.0;Centers[0][60+ell]=4.0;
+    Centers[0][80+ell]=5.0;
+    Centers[1][ell]=5.0;Centers[1][20+ell]=1.0;
+    Centers[1][40+ell]=2.0;Centers[1][60+ell]=3.0;
+    Centers[1][80+ell]=4.0;
+    Centers[2][ell]=4.0;Centers[2][20+ell]=5.0;
+    Centers[2][40+ell]=1.0;Centers[2][60+ell]=2.0;
+    Centers[2][80+ell]=3.0;
+    Centers[3][ell]=3.0;Centers[3][20+ell]=4.0;
+    Centers[3][40+ell]=5.0;Centers[3][60+ell]=1.0;
+    Centers[3][80+ell]=2.0;
+    if(centers_number()!=4){
+      Centers[4][ell]=2.0;Centers[4][20+ell]=3.0;
+      Centers[4][40+ell]=4.0;Centers[4][60+ell]=5.0;
+      Centers[4][80+ell]=1.0;
+    }
+    if(centers_number()==6)
+      Centers[5]=Centers[0];
+  }
+  if(method==0){
+    for(int i=0;i<centers_number();i++){
+      double sum=0.0;
+      for(int ell=0;ell<dimension();ell++)
+	sum+=pow(Centers[i][ell],2.0);
+      for(int ell=0;ell<dimension();ell++)
+	Centers[i][ell]/=sqrt(sum);
+    }
+  }
   return;
 }
 

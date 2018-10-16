@@ -320,16 +320,39 @@ void Recom::choice_mae_f(std::vector<std::string> dir, int p){
     choiceFmeasure[method][Current]=resultFmeasure[method][obje_index];
     //選ばれたROCをchoiceフォルダに移す
     std::string oldname
-      =dir[method]+"/ROC"+"/"+METHOD_NAME+"ROC"
+      =dir[method]+"/ROC/"+METHOD_NAME+"ROC"
       +std::to_string(Missing)+"_"
       +std::to_string(Current)+"_"
       +std::to_string(obje_index)+"sort.txt";
     std::string newname
-      =dir[method]+"/ROC/choice"+"/"+METHOD_NAME+"ROC"
+      =dir[method]+"/ROC/choice/"+METHOD_NAME+"ROC"
       +std::to_string(Missing)+"_"
       +std::to_string(Current)+"sort.txt";
     Rename(oldname,newname);
   }
+  return;
+}
+
+void Recom::save_roc_for_artificiality(std::string dir){
+  std::string ROC_STR
+    =dir+"/ROC/choice/"+METHOD_NAME+"ROC"
+    +std::to_string(Missing)+"_"+std::to_string(Current)+"sort.txt";
+  //ROCでプロットする点の数
+  int max_index=(int)return_max_value()*10;
+  //一旦保存
+  Vector False=FP_TN;
+  Vector True=TP_FN;
+  std::ofstream ofs(ROC_STR,std::ios::app);
+  if(!ofs)
+    std::cerr<<"ファイルオープン失敗\n";
+  else{
+    //横軸でソート
+    Sort(False,True,max_index);
+    for(int i=0;i<max_index;i++)
+      ofs<<std::fixed<<std::setprecision(10)
+	 <<False[i]<<"\t"<<True[i]<<std::endl;
+  }
+  ofs.close();
   return;
 }
 
@@ -401,7 +424,7 @@ void Recom::precision_summury(std::vector<std::string> dir){
     if(!ofs)
       std::cerr<<"ファイルopen失敗\n";
     std::cout<<"miss:"<<Missing<<"\tMAE="<<sumMAE/(double)MISSINGTRIALS
-	     <<"\tF-measure="<<sumF/(double)MISSINGTRIALS<<"\tROC="
+	     <<"\tF-measure="<<sumF/(double)MISSINGTRIALS<<"\tAUC="
 	     <<rocarea/(double)MISSINGTRIALS<<std::endl;
     ofs<<Missing<<"\t"<<std::fixed<<std::setprecision(10)
        <<"\t"<<sumMAE/(double)MISSINGTRIALS
