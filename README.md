@@ -1,7 +1,7 @@
 # 更新履歴
 
 ## 2018/10/16
-推薦人工データ初期帰属度の与え方関数initialize_membership2をhcm.cxxに追加
+推薦人工データ初期帰属度の与え方関数initialize_membership2を[hcm.cxx](https://github.com/ntyaan/clustering/blob/master/src/hcm.cxx) に追加
 
 ```  
 for(int k=0;k<data_number();k++){
