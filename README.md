@@ -1,5 +1,36 @@
 # 更新履歴
 
+## 2018/11/11
+クラスタ中心として与えるデータをランダムで選択すると，
+選ばれたデータによってはクラスタリングができない(計算限界，not a number)
+ことがある．
+これまで，そのようなデータが選択されたとき，
+クラスタリングが行える最適なデータが選ばれるまでループしていた．
+そこで10回ループしたらクラスタリングが行えなかったとしてgrouplens単体で
+推薦するようにする．これを初期クラスタ中心を与える回数分行う．
+つまり最悪な場合(groplelens単体で推薦された結果が採択される場合)，
+10(初期クラスタ中心を与える回数)×10(今回導入したループ数制限)回分
+ループして一回もクラスタリングができなかったこととなる．
+ループ回数を保存する変数InitCentLoopis10を定義し，
+推薦mainのtest.revise_disimilarities()の前に以下を追加
+
+```
+if(InitCentLoopis10>9){
+   test.reset();
+   recom.obje(recom.Ccurrent())=DBL_MAX;
+   recom.pearsonsim();
+   recom.pearsonpred2();
+   recom.mae(dir[0], 0);
+   recom.fmeasure(dir[0], 0);
+   recom.roc(dir[0]);
+   recom.ofs_objective(dir[0]);
+   test.ofs_selected_data(dir[0]);
+   ForBadChoiceData=0;
+   p=0;
+   break;
+  }
+```
+
 ## 2018/10/16
 推薦人工データ初期帰属度の与え方関数initialize_membership2を[hcm.cxx](https://github.com/ntyaan/clustering/blob/master/src/hcm.cxx) に追加
 

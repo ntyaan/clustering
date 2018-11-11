@@ -26,7 +26,7 @@ int main(void){
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.0001;m<=1.001;m+=0.0003){
+    for(double m=1.0001;m<=1.001;m+=0.0001){
       for(double lambda=1.0;lambda<=1000;lambda*=10){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
@@ -52,7 +52,7 @@ int main(void){
 	  test.copydata(recom.sparseincompletedata());
 	  test.ForSphericalData();	
 	  //選んだデータがNanになったときシード値変更変数
-	  int ForBadChoiceData=0;
+	  int ForBadChoiceData=0, InitCentLoopis10=0;
 	  //クラスタリングの初期値の与え方ループ
 	  for(recom.Ccurrent()=0;recom.Ccurrent()
 		<CLUSTERINGTRIALS;recom.Ccurrent()++){
@@ -68,6 +68,20 @@ int main(void){
 	    //nanが出た時の回避で使う
 	    int p=1;
 	    while(1){
+	      if(InitCentLoopis10>9){
+		test.reset();
+		recom.obje(recom.Ccurrent())=DBL_MAX;
+		recom.pearsonsim();
+		recom.pearsonpred2();
+		recom.mae(dir[0], 0);
+		recom.fmeasure(dir[0], 0);
+		recom.roc(dir[0]);
+		recom.ofs_objective(dir[0]);
+		test.ofs_selected_data(dir[0]);
+		InitCentLoopis10=0;
+		p=0;
+		break;
+	      }
 	      test.revise_dissimilarities();
 	      test.revise_membership();
 	      test.revise_centers();
@@ -78,12 +92,13 @@ int main(void){
 		=max_norm(test.tmp_membership()-test.membership());
 	      double diff_p
 		=max_norm(test.tmp_clusters_size()-test.clusters_size());
-	      double diff=diff_u+diff_v+diff_p;
+	      double diff=diff_u+diff_v+diff_p;	      
 	      if(std::isnan(diff)){
 		std::cout<<"diff is nan"<<std::endl;
 		test.reset();
 		recom.Ccurrent()--;p=0;
 		ForBadChoiceData++;
+		InitCentLoopis10++;
 		break;
 	      }
 	      if(diff<DIFF_FOR_STOP)break;
@@ -107,6 +122,7 @@ int main(void){
 	      recom.roc(dir[0]);
 	      recom.ofs_objective(dir[0]);
 	      test.ofs_selected_data(dir[0]);
+	      InitCentLoopis10=0;
 	    }
 	  }//initilal setting for clustering
 	  recom.choice_mae_f(dir);

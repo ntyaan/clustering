@@ -20,13 +20,13 @@ const std::string METHOD_NAME="KLFCCMM";
 int main(void){
   std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=4;clusters_number<=6;clusters_number++){
+  for(int clusters_number=5;clusters_number<=5;clusters_number++){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double lambda=1.0;lambda<=100;lambda*=10.0){
-      for(double t=1.0E-3;t<=1.0E-1;t*=10){
+    for(double lambda=1;lambda<=100;lambda*=10.0){
+      for(double t=1.0E-2;t<=1.0E-1;t*=10){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	KLFCCMM test(item_number, user_number, 

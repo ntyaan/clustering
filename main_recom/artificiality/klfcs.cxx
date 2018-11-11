@@ -20,12 +20,12 @@ const std::string METHOD_NAME="KLFCS";
 int main(void){
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=4;clusters_number<=6;clusters_number++){
+  for(int clusters_number=10;clusters_number<=50;clusters_number+=5){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double lambda=14.0;lambda<=16.0;lambda+=1.0){
+    for(double lambda=35.0;lambda<=35.0;lambda*=10){
       //時間計測
       auto start=std::chrono::system_clock::now();
       KLFCS test(item_number, user_number, 

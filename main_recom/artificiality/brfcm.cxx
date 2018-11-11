@@ -23,12 +23,12 @@ const std::string METHOD_NAME="BRFCM";
 int main(void){
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=4;clusters_number<=6;clusters_number++){
+  for(int clusters_number=20;clusters_number<=50;clusters_number+=5){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.30;m<=1.51;m+=0.10){
+    for(double m=1.50;m<=1.61;m+=0.10){
       //時間計測
       auto start=std::chrono::system_clock::now();
       //ユーザ数×ユーザ数

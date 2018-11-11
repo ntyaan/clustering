@@ -53,7 +53,7 @@ int main(void){
 	//データ(相関係数)をtestに渡す
 	test.copy_similarities(recom.similarity());	
 	//選んだデータがNanになったときシード値変更変数
-	int ForBadChoiceData=0;
+	int ForBadChoiceData=0, InitCentLoopis10=0;
 	//クラスタリングの初期値の与え方ループ
 	for(recom.Ccurrent()=0;recom.Ccurrent()
 	      <CLUSTERINGTRIALS;recom.Ccurrent()++){
@@ -70,6 +70,20 @@ int main(void){
 	  //nanが出た時の回避で使う
 	  int p=1;
 	  while(1){
+	    if(InitCentLoopis10>9){
+	      test.reset();
+	      recom.obje(recom.Ccurrent())=DBL_MAX;
+	      recom.pearsonsim();
+	      recom.pearsonpred2();
+	      recom.mae(dir[0], 0);
+	      recom.fmeasure(dir[0], 0);
+	      recom.roc(dir[0]);
+	      recom.ofs_objective(dir[0]);
+	      test.ofs_selected_data(dir[0]);
+	      InitCentLoopis10=0;
+	      p=0;
+	      break;
+	    }
 	    test.revise_dissimilarities();
 	    test.revise_membership();
 	    test.revise_centers();
@@ -86,6 +100,7 @@ int main(void){
 	      test.reset();
 	      recom.Ccurrent()--;p=0;
 	      ForBadChoiceData++;
+	      InitCentLoopis10++;
 	      break;
 	    }
 	    if(diff<DIFF_FOR_STOP)break;
@@ -110,6 +125,7 @@ int main(void){
 	    recom.roc(dir[0]);
 	    recom.ofs_objective(dir[0]);
 	    test.ofs_selected_data(dir[0]);
+	    InitCentLoopis10=0;
 	  }
 	}//initilal setting for clustering
 	recom.choice_mae_f(dir);

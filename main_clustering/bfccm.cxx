@@ -5,9 +5,10 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
+  "FreqData";
   // "SimplexData";
   //"tfidf1-SimplexData";
-  "tfidf2-SimplexData";
+  //"tfidf2-SimplexData";
 constexpr int PARAMETER = 5;
 
 int main(void){
@@ -44,7 +45,7 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    tfidf2(Data);
+    //tfidf2(Data);
     Matrix CorrectMembership(centers_number, data_number);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership
@@ -109,6 +110,7 @@ int main(void){
 	//全体の収束具合
 	double diff=diff_u+diff_v+diff_p;
 	savediff=diff;
+	//std::cout<<diff_u<<" "<<diff_v<<" "<<diff_p<<std::endl;
 	//収束したらクラスタリング終了
 	if(diff<DIFF_FOR_STOP)break;
 	if(test.iterates()>=MAX_ITERATES)break;

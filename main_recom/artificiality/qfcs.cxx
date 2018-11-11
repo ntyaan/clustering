@@ -20,13 +20,13 @@ const std::string METHOD_NAME="QFCS";
 int main(void){
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=4;clusters_number<=6;clusters_number++){
+  for(int clusters_number=2;clusters_number<=9;clusters_number+=1){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.3;m<=1.51;m+=0.1){
-      for(double lambda=1.0;lambda<=100.0;lambda*=10){
+    for(double m=1.01;m<=1.01;m+=0.1){
+      for(double lambda=35;lambda<=35;lambda*=10){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	QFCS test(item_number, user_number, 

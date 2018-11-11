@@ -5,9 +5,10 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
+  "FreqData";
   //"SimplexData";
   //"tfidf1-SimplexData";
-  "tfidf2-SimplexData";
+  //"tfidf2-SimplexData";
 constexpr int PARAMETER = 5;
 
 int main(void){
@@ -74,7 +75,7 @@ int main(void){
     BFCCMM test(data_dimension, data_number, centers_number, 0, 0);
     //データを与える
     test.copydata(Data);
-    test.ForMMMData();
+    //test.ForMMMData();
     for(int index=0;index<PARAMETER;index++){
       for(int index2=0;index2<PARAMETER;index2++){
 	test.fuzzifierEm()=Parameter[index];
