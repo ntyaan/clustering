@@ -18,7 +18,7 @@ const std::string InputDataName="data/2018/sparse_"+data_name
 const std::string METHOD_NAME="KLFCCMM";
 
 int main(void){
-  std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
+  std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
   for(int clusters_number=5;clusters_number<=5;clusters_number++){
     //Recomクラスの生成
@@ -48,6 +48,7 @@ int main(void){
 	    recom.reset();
 	    //データを欠損
 	    recom.revise_missing_values();
+	    recom.pearsonsim();
 	    //データをtestに渡す
 	    test.copydata(recom.sparseincompletedata());
 	    test.ForMMMData();	
@@ -89,20 +90,21 @@ int main(void){
 	    //クラスタリング＋ピアソン相関係数の計算
 	    //GroupLen Methodで予測
 	    recom.reset2();
-	    recom.pearsonsim_clustering();
-	    recom.pearsonpred2();
+	    recom.pearsonpred2_after_clustering();
+	    //recom.pearsonsim_clustering();
+	    //recom.pearsonpred2();
 	    recom.mae(dir[0], 0);
 	    recom.fmeasure(dir[0], 0);
 	    recom.save_roc_for_artificiality(dir[0]);
 	    recom.ofs_objective(dir[0]);
 	    test.ofs_selected_data(dir[0]);
 	    //共クラスタリング
-	    recom.reset2();
-	    recom.revise_prediction();
-	    recom.mae(dir[1], 1);
-	    recom.fmeasure(dir[1], 1);
-	    recom.save_roc_for_artificiality(dir[1]);
-	    recom.save_mae_f(dir);
+	    //recom.reset2();
+	    //recom.revise_prediction();
+	    //recom.mae(dir[1], 1);
+	    //recom.fmeasure(dir[1], 1);
+	    //recom.save_roc_for_artificiality(dir[1]);
+	    //recom.save_mae_f(dir);
 	  }      	
 	  recom.precision_summury(dir);
 	}

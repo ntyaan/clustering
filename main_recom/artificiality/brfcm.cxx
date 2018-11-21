@@ -40,7 +40,7 @@ int main(void){
       //データ入力
       recom.input(InputDataName);
       //欠損数ループ
-      for(recom.missing()=7500;//KIZAMI;
+      for(recom.missing()=KIZAMI;
 	  recom.missing()<=KESSON;recom.missing()+=KIZAMI){
 	//シード値の初期化
 	recom.Seed();
@@ -50,7 +50,7 @@ int main(void){
 	  //初期化
 	  recom.reset();
 	  //データを欠損
-	  recom.revise_missing_values_new();
+	  recom.revise_missing_values();
 	  //相関係数計算
 	  recom.pearsonsim();
 	  //データ(相関係数)をtestに渡す
@@ -95,8 +95,9 @@ int main(void){
 	  //GroupLen Methodで予測
 	  recom.reset2();
 	  //アクティブユーザと同クラスタに属すユーザのみ計算に使用
-	  recom.filtering_similarities();
-	  recom.pearsonpred2();
+	  recom.pearsonpred2_after_clustering();
+	  //recom.filtering_similarities();
+	  //recom.pearsonpred2();
 	  recom.mae(dir[0], 0);
 	  recom.fmeasure(dir[0], 0);
 	  recom.save_roc_for_artificiality(dir[0]);

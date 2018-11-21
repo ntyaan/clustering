@@ -47,6 +47,7 @@ int main(void){
 	  recom.reset();
 	  //データを欠損
 	  recom.revise_missing_values();
+	  recom.pearsonsim();
 	  //データをtestに渡す
 	  test.copydata(recom.sparseincompletedata());
 	  test.ForSphericalData();	
@@ -88,8 +89,9 @@ int main(void){
 	  //クラスタリング＋ピアソン相関係数の計算
 	  //GroupLen Methodで予測
 	  recom.reset2();
-	  recom.pearsonsim_clustering();
-	  recom.pearsonpred2();
+	  recom.pearsonpred2_after_clustering();
+	  //recom.pearsonsim_clustering();
+	  //recom.pearsonpred2();
 	  recom.mae(dir[0], 0);
 	  recom.fmeasure(dir[0], 0);
 	  recom.save_roc_for_artificiality(dir[0]);

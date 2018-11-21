@@ -92,8 +92,9 @@ int main(void){
 	    //GroupLen Methodで予測
 	    recom.reset2();
 	    //アクティブユーザと同クラスタに属すユーザのみ計算に使用
-	    recom.filtering_similarities();
-	    recom.pearsonpred2();
+	    recom.pearsonpred2_after_clustering();
+	    //recom.filtering_similarities();
+	    //recom.pearsonpred2();
 	    recom.mae(dir[0], 0);
 	    recom.fmeasure(dir[0], 0);
 	    recom.save_roc_for_artificiality(dir[0]);
