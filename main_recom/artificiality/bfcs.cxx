@@ -20,12 +20,12 @@ const std::string METHOD_NAME="BFCS";
 int main(void){
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=5;clusters_number<=5;clusters_number++){
+  for(int clusters_number=20;clusters_number<=20;clusters_number++){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.0001;m<=1.0001;m+=0.10){
+    for(double m=1.1;m<=1.1;m+=0.10){
       //時間計測
       auto start=std::chrono::system_clock::now();
       BFCS test(item_number, user_number, 
@@ -36,7 +36,7 @@ int main(void){
       //データ入力
       recom.input(InputDataName);
       //欠損数ループ
-      for(recom.missing()=KIZAMI;
+      for(recom.missing()=7500;//KIZAMI;
 	  recom.missing()<=KESSON;recom.missing()+=KIZAMI){
 	//シード値の初期化
 	recom.Seed();

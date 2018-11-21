@@ -27,7 +27,7 @@ int main(void){
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double lambda=1.0;lambda<=1000;lambda*=10){
+    for(double lambda=1;lambda<=1000;lambda*=10){
       for(double m=1.0001;m<=1.001;m+=0.0003){
 	for(double t=1.0E-6;t<=1.0E-4;t*=10){
 	  //時間計測
@@ -50,6 +50,7 @@ int main(void){
 	    recom.reset();
 	    //データ
 	    recom.revise_missing_values();
+	    recom.pearsonsim();
 	    //データをtestに渡す
 	    test.copydata(recom.sparseincompletedata());
 	    //MMM用にデータを正規化する
@@ -74,7 +75,6 @@ int main(void){
 		if(InitCentLoopis10>9){
 		  test.reset();
 		  recom.obje(recom.Ccurrent())=DBL_MAX;
-		  recom.pearsonsim();
 		  recom.pearsonpred2();
 		  recom.mae(dir[0], 0);
 		  recom.fmeasure(dir[0], 0);
@@ -118,8 +118,9 @@ int main(void){
 		//クラスタリング＋ピアソン相関係数の計算
 		//GroupLen Methodで予測
 		recom.reset2();
-		recom.pearsonsim_clustering();
-		recom.pearsonpred2();
+		//recom.pearsonsim_clustering();
+		recom.pearsonpred2_after_clustering();
+		//recom.pearsonpred2();
 		recom.mae(dir[0], 0);
 		recom.fmeasure(dir[0], 0);
 		recom.roc(dir[0]);

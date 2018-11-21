@@ -10,10 +10,6 @@ HCMA::HCMA(int dimension,
     Clusters_size[i]=DBL_MAX;
   }
 
-void HCMA::revise_clusters_size(void){
-  return;
-}
-
 void HCMA::initialize_clustersize(void){
   //ここではクラスタ数分の1を初期値に与えている
   //データが各クラスタへどれくらい属しているか分かっている場合

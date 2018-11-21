@@ -21,7 +21,7 @@ const std::string METHOD_NAME="BFCS";
 int main(void){
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=10;clusters_number<=30;clusters_number+=5){
+  for(int clusters_number=2;clusters_number<=8;clusters_number+=1){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
@@ -47,6 +47,7 @@ int main(void){
 	recom.reset();
 	//データを欠損
 	recom.revise_missing_values();
+	recom.pearsonsim();
 	//データをtestに渡す
 	test.copydata(recom.sparseincompletedata());
 	test.ForSphericalData();	
@@ -70,7 +71,6 @@ int main(void){
 	    if(InitCentLoopis10>9){
 	      test.reset();
 	      recom.obje(recom.Ccurrent())=DBL_MAX;
-	      recom.pearsonsim();
 	      recom.pearsonpred2();
 	      recom.mae(dir[0], 0);
 	      recom.fmeasure(dir[0], 0);
@@ -114,8 +114,9 @@ int main(void){
 	    //クラスタリング＋ピアソン相関係数の計算
 	    //GroupLen Methodで予測
 	    recom.reset2();
-	    recom.pearsonsim_clustering();
-	    recom.pearsonpred2();
+	    //recom.pearsonsim_clustering();
+	    recom.pearsonpred2_after_clustering();
+	    //recom.pearsonpred2();
 	    recom.mae(dir[0], 0);
 	    recom.fmeasure(dir[0], 0);
 	    recom.roc(dir[0]);

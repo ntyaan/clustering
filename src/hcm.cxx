@@ -306,6 +306,13 @@ void HCM::initialize_centers(int random_index){
   for(int ell=0;ell<Data[InitializeC[0]].essencialSize();ell++)
     Centers[0][Data[InitializeC[0]].indexIndex(ell)]	  	  	  
       =Data[InitializeC[0]].elementIndex(ell);
+  /*
+    double sum=0.0;
+    for(int ell=0;ell<dimension();ell++)
+    sum+=Centers[0][ell];
+    for(int ell=0;ell<dimension();ell++)
+    Centers[0][ell]/=sum;
+  */
   for(int i=1;i<centers_number();i++){
     //step:2
     //データ間非類似度d_{i,k}を計算
@@ -345,6 +352,13 @@ void HCM::initialize_centers(int random_index){
     for(int ell=0;ell<Data[InitializeC[i]].essencialSize();ell++)
       Centers[i][Data[InitializeC[i]].indexIndex(ell)]
 	=Data[InitializeC[i]].elementIndex(ell);
+    /*
+      double sum=0.0;
+      for(int ell=0;ell<dimension();ell++)
+	sum+=Centers[i][ell];
+      for(int ell=0;ell<dimension();ell++)
+	Centers[i][ell]/=sum;
+    */
   }
   return;
 }

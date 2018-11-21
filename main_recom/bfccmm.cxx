@@ -28,7 +28,7 @@ int main(void){
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
     for(double m=1.0001;m<=1.001;m+=0.0003){
-      for(double t=1.0E-6;t<=1.0E-4;t*=10){
+      for(double t=1e-6;t<=1e-4;t*=10){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	BFCCMM test(item_number, user_number, 
@@ -49,10 +49,11 @@ int main(void){
 	  recom.reset();
 	  //データを欠損
 	  recom.revise_missing_values();
+	  recom.pearsonsim();
 	  //データをtestに渡す
 	  test.copydata(recom.sparseincompletedata());
 	  //MMM用にデータを正規化する
-	  test.ForMMMData();	
+	  test.ForMMMData();
 	  //選んだデータがNanになったときシード値変更変数
 	  int ForBadChoiceData=0, InitCentLoopis10=0;
 	  //クラスタリングの初期値の与え方ループ
@@ -73,7 +74,6 @@ int main(void){
 	      if(InitCentLoopis10>9){
 		test.reset();
 		recom.obje(recom.Ccurrent())=DBL_MAX;
-		recom.pearsonsim();
 		recom.pearsonpred2();
 		recom.mae(dir[0], 0);
 		recom.fmeasure(dir[0], 0);
@@ -117,8 +117,8 @@ int main(void){
 	      //クラスタリング＋ピアソン相関係数の計算
 	      //GroupLen Methodで予測
 	      recom.reset2();
-	      recom.pearsonsim_clustering();
-	      recom.pearsonpred2();
+	      //recom.pearsonsim_clustering();
+	      recom.pearsonpred2_after_clustering();
 	      recom.mae(dir[0], 0);
 	      recom.fmeasure(dir[0], 0);
 	      recom.roc(dir[0]);

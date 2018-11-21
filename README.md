@@ -1,5 +1,18 @@
 # 更新履歴
 
+## 2018/11/21
+RFCMtypeのクラスタリングを用いた推薦システム実データのmain関数において
+これまでは、recom.filtering_similarities();によってアクティブユーザと同じクラスタに属さないユーザのピアソン相関係数(Similaritiy)を0にすることでその後呼ばれるrecom.pearsonpred2();ではそれらのSimilarityが使われない処理をしているつもりだったが、main関数内の初期クラスタ中心を与えるループのおわりにSimilarityの初期化が行われていなかったため想定していた処理と違う結果が得られてしまう．
+そこでrecom.filtering_similarities();recom.pearsonpred2();の代わりに   recom.pearsonpred2_after_clustering();を実行するようにする．
+
+FCCM,FCCMM,FCStypeのクラスタリング手法を用いた推薦システム実データmain関数において
+これまでは、初期クラスタ中心ごとに、クラスタリング後にアクティブユーザに属すクラスタに属すユーザ間のピアソン相関係数を計算していた．これは時間の無駄なのでクラスタリング前に全ユーザ間のピアソン相関係数を計算し，その後フィルタにかけGrouplensを使うようにした．
+具体的には関数recom.revise_missing_values();の後にrecom.pearsonsim();をしてrecom.pearsonsim_clustering();recom.pearsonpred2();の代わりにrecom.pearsonpred2_after_clustering();を実行する．
+
+関数revise_missing_values_newをrecom.cxx,recom.hに追加
+関数revise_missing_valuesでデータの全要素が全て欠損されないように調整しているつもりだったができてなかったのでこの関数を追加した。revise_missing_values_newではデータの要素が少なくとも2つ以上は残すようにしている．
+自分はすべての実験においてrevise_missing_valuesを使っているが今後の実験ではrevise_missing_values_newを使うべきだと思う．
+
 ## 2018/11/11
 クラスタ中心として与えるデータをランダムで選択すると，
 選ばれたデータによってはクラスタリングができない(計算限界，not a number)

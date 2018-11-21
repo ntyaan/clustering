@@ -74,7 +74,6 @@ int main(void){
 	      if(InitCentLoopis10>9){
 		test.reset();
 		recom.obje(recom.Ccurrent())=DBL_MAX;
-		recom.pearsonsim();
 		recom.pearsonpred2();
 		recom.mae(dir[0], 0);
 		recom.fmeasure(dir[0], 0);
@@ -119,8 +118,9 @@ int main(void){
 	      //GroupLen Methodで予測
 	      recom.reset2();
 	      //アクティブユーザと同クラスタに属すユーザのみ計算に使用
-	      recom.filtering_similarities();
-	      recom.pearsonpred2();
+	      recom.pearsonpred2_after_clustering();
+	      //recom.filtering_similarities();
+	      //recom.pearsonpred2();
 	      recom.mae(dir[0], 0);
 	      recom.fmeasure(dir[0], 0);
 	      recom.roc(dir[0]);

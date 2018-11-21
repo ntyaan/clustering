@@ -23,12 +23,12 @@ const std::string METHOD_NAME="BRFCM";
 int main(void){
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=20;clusters_number<=50;clusters_number+=5){
+  for(int clusters_number=20;clusters_number<=20;clusters_number+=5){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.50;m<=1.61;m+=0.10){
+    for(double m=1.40;m<=1.40;m+=0.10){
       //時間計測
       auto start=std::chrono::system_clock::now();
       //ユーザ数×ユーザ数
@@ -40,7 +40,7 @@ int main(void){
       //データ入力
       recom.input(InputDataName);
       //欠損数ループ
-      for(recom.missing()=KIZAMI;
+      for(recom.missing()=7500;//KIZAMI;
 	  recom.missing()<=KESSON;recom.missing()+=KIZAMI){
 	//シード値の初期化
 	recom.Seed();
@@ -50,7 +50,7 @@ int main(void){
 	  //初期化
 	  recom.reset();
 	  //データを欠損
-	  recom.revise_missing_values();
+	  recom.revise_missing_values_new();
 	  //相関係数計算
 	  recom.pearsonsim();
 	  //データ(相関係数)をtestに渡す

@@ -78,6 +78,7 @@ protected:
   void reset(void);
   void reset2(void);
   //データを欠損
+  void revise_missing_values_new(void);
   void revise_missing_values(void);
   //MAEの計算，textに保存
   void mae(std::string, int);
@@ -114,6 +115,7 @@ protected:
   void pearsonpred1(void);
   //予測値計算:GroupLens
   void pearsonpred2(void);
+  void pearsonpred2_after_clustering(void);
   //RFCM用
   void filtering_similarities(void);
   //indexのユーザの既評価値平均を計算

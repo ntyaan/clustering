@@ -12,7 +12,7 @@ public:
        int data_number,
        int centers_number);
   //クラスタサイズ調整変数の計算
-  virtual void revise_clusters_size(void);
+  virtual void revise_clusters_size(void)=0;
   //初期クラスタサイズ調整変数の決定
   void initialize_clustersize();
   //各変数の初期化
