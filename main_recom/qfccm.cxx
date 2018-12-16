@@ -22,13 +22,13 @@ int main(void){
   //std::vector<std::string> dirs = MkdirFCCM(METHOD_NAME);
   std::vector<std::string> dirs = MkdirFCS(METHOD_NAME);
   //クラスタ数でループ
-  for(int clusters_number=2;clusters_number<=8;clusters_number++){
+  for(int clusters_number=5;clusters_number<=5;clusters_number++){
     //Recomクラスの生成
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.0001;m<=1.001;m+=0.0003){
-      for(double lambda=1;lambda<=1000;lambda*=10){
+    for(double m=1.00000001;m<=1.00000001;m+=0.0003){
+      for(double lambda=1000;lambda<=1000;lambda*=10){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	QFCCM test(item_number, user_number, 

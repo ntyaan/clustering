@@ -5,17 +5,19 @@
 #define MAX_ITERATES 10000
 #define DIFF_FOR_STOP 1.0E-6
 std::string method=
-  "SimplexData";
-//"tfidf1-SimplexData";
+  //"SimplexData";
+  "tfidf1-SimplexData";
 //"tfidf2-SimplexData";
-constexpr int PARAMETER = 5;
+constexpr int PARAMETER1 = 6;
+constexpr int PARAMETER2 = 6;
+constexpr int PARAMETER3 = 1;
 constexpr int INIT_CENTERS = 10;
 
 int main(void){
   std::string c_p = current_path();
   std::ofstream ofs_ari("ARI-QFCCMM-"+method+"_init_centers.txt", std::ios::app);
-  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
-    const int centers_number=centers[INDEX];
+  for(int INDEX=10;INDEX<11/*(int)centers.size()*/;INDEX++){
+    const int centers_number=centers[INDEX];//1.0E-15 12~13 8~13 14~15
     const std::string file=files[INDEX];
     std::cout<<files[INDEX]<<std::endl;
     //読み込むデータファイル
@@ -47,12 +49,12 @@ int main(void){
       Data[cnt]=dummy;
     }
     ifs.close();
-    //tfidf1(Data);
+    tfidf1(Data);
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-QFCCMM-"+method+"-"+file+".txt", std::ios::app);
-    double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
-    double Parameter2[PARAMETER]={0.5, 1.0, 10, 100, 1000};
-    double Parameter3[PARAMETER]={1.0E-6, 1.0E-4, 0.01, 0.1, 0.5};
+    double Parameter[PARAMETER1]={1.0+1.0E-15,1.00001, 1.0001, 1.001, 1.01, 1.1};
+    double Parameter2[PARAMETER2]={std::numeric_limits<double>::max(),0.5, 1.0, 10, 100, 1000};
+    double Parameter3[PARAMETER3]={1.0E-15};//, 1.0E-6, 1.0E-4, 0.01, 0.1, 0.5};
     QFCCMM test(data_dimension, data_number, centers_number, 0, 0, 0);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership
@@ -72,9 +74,9 @@ int main(void){
     test.ForMMMData();
     double average_ari=-1.0, sd=0.0, params0=0.0,
       params1=0.0, params2, min_obje_ari=0.0;
-    for(int index=0;index<PARAMETER;index++){
-      for(int index2=0;index2<PARAMETER;index2++){
-	for(int index3=0;index3<PARAMETER;index3++){
+    for(int index=0;index<PARAMETER1;index++){
+      for(int index2=0;index2<PARAMETER2;index2++){
+	for(int index3=0;index3<PARAMETER3;index3++){
 	  test.fuzzifierEm()=Parameter[index];
 	  test.fuzzifierLambda()=Parameter2[index2];
 	  test.fuzzifierEt()=Parameter3[index3];
@@ -120,14 +122,14 @@ int main(void){
 		break;
 	      }
 	    }
-	if(FALSE>=INIT_CENTERS){
-	  ofs<<"FALSE\t"
-	     <<test.fuzzifierLambda()<<"\t"
-	     <<test.fuzzifierEm()<<"\t"
-	     <<test.fuzzifierEt()<<"\t"
-	     <<test.iterates()<<std::endl;
-	  break;
-	}
+	    if(FALSE>=INIT_CENTERS){
+	      ofs<<"FALSE\t"
+		 <<test.fuzzifierLambda()<<"\t"
+		 <<test.fuzzifierEm()<<"\t"
+		 <<test.fuzzifierEt()<<"\t"
+		 <<test.iterates()<<std::endl;
+	      break;
+	    }
 	    if(p==1){
 	      //std::cout<<"loop:"<<test.iterates()<<"\n";
 	      test.set_crispMembership();
@@ -152,7 +154,7 @@ int main(void){
 	      for(int j=0;j<test.initialize_c().size();j++)
 		ofs<<test.initialize_c()[j]<<" ";
 	      ofs<<std::endl;
-	      if(min_objective<test.objective()){
+	      if(min_objective>test.objective()){
 		Index=ite;
 		min_objective=test.objective();
 	      }
@@ -191,7 +193,7 @@ int main(void){
       	   << "$ & $t=" << params2
 	   << "$ \\\\\\hline" <<std::endl;
   }
-  ofs_ari.close();
+  //ofs_ari.close();
   return 0;
 }
 

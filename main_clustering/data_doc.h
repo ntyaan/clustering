@@ -34,11 +34,11 @@ std::vector<std::string> files=
   {
    "cacmcisi" , "citeseer" , "classic", "classic4" , "cora" ,
    "cranmed" , "fbis" , "hitech" , "k1a" , "k1b" , "la1" , "la2" ,
-   "la12" , "mm" , "new3" , "ohscal" , "re0" , "re1", "reviews" ,
+   "la12" , "mm" , /*"new3" ,*/ "ohscal" , "re0" , "re1", "reviews" ,
    "sports" , "tr11" , "tr12" , "tr23" , "tr31", "tr41" , "tr45" ,
    "wap" , "webkb" 
   };
 std::vector<int> centers=
   {
-   2,6,4,4,7,2,17,6,20,6,6,6,6,2,44,10,13,25,5,7,9,8,6,7,10,10,20,5
+   2,6,4,4,7,2,17,6,20,6,6,6,6,2,/*44,*/10,13,25,5,7,9,8,6,7,10,10,20,5
   };

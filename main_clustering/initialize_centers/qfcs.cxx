@@ -8,13 +8,14 @@ std::string method=
   //"SphericalData";
   //"tfidf1-SphericalData";
   "tfidf2-SphericalData";
-constexpr int PARAMETER = 5;
+constexpr int PARAMETER1 = 6;
+constexpr int PARAMETER2 = 1;
 constexpr int INIT_CENTERS = 10;
 
 int main(void){
   std::string c_p = current_path();
   std::ofstream ofs_ari("ARI-QFCS-"+method+"_init_centers.txt", std::ios::app);
-  for(int INDEX=14;INDEX<15/*(int)centers.size()*/;INDEX++){
+  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
     std::cout<<files[INDEX]<<std::endl;
@@ -50,8 +51,8 @@ int main(void){
     tfidf2(Data);
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-QFCS-"+method+"-"+file+".txt", std::ios::app);
-    double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
-    double Parameter2[PARAMETER]={0.5, 1.0, 10, 100, 1000};
+    double Parameter[PARAMETER1]={1.0+1.0E-15,1.00001, 1.0001, 1.001, 1.01, 1.1};
+    double Parameter2[PARAMETER2]={std::numeric_limits<double>::max()};//{0.5, 1.0, 10, 100, 1000};
     QFCS test(data_dimension, data_number, centers_number, 0, 0);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership
@@ -70,8 +71,8 @@ int main(void){
     test.copydata(Data);
     test.ForSphericalData();
     double average_ari=-1.0, sd=0.0, params0=0.0, params1=0.0, min_obje_ari=0.0;
-    for(int index=0;index<PARAMETER;index++){
-      for(int index2=0;index2<PARAMETER;index2++){
+    for(int index=0;index<PARAMETER1;index++){
+      for(int index2=0;index2<PARAMETER2;index2++){
 	test.fuzzifierEm()=Parameter[index];
 	test.fuzzifierLambda()=Parameter2[index2];
 	std::vector<double> ARIs(INIT_CENTERS);
@@ -146,7 +147,7 @@ int main(void){
 	    for(int j=0;j<test.initialize_c().size();j++)
 	      ofs<<test.initialize_c()[j]<<" ";
 	    ofs<<std::endl;
-	    if(min_objective<test.objective()){
+	    if(min_objective>test.objective()){
 	      Index=ite;
 	      min_objective=test.objective();
 	    }

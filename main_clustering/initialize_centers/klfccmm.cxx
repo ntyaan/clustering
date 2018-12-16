@@ -146,7 +146,7 @@ int main(void){
 	    for(int j=0;j<test.initialize_c().size();j++)
 	      ofs<<test.initialize_c()[j]<<" ";
 	    ofs<<std::endl;
-	    if(min_objective<test.objective()){
+	    if(min_objective>test.objective()){
 	      Index=ite;
 	      min_objective=test.objective();
 	    }

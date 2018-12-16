@@ -1,5 +1,33 @@
 # 更新履歴
 
+## 2018/12/12
+文書クラスタリング初期値クラスタ中心main関数内で10通りの初期クラスタ中心のうち目的関数値最小のARIを出しているつもりだったが意味のないARIを出力していたのを修正．
+
+```
+      double min_objective=DBL_MAX;
+      .
+      .
+      .
+	  if(min_objective<test.objective()){
+	    Index=ite;
+	    min_objective=test.objective();
+	  }
+```
+こうなっていたのを
+```
+      double min_objective=DBL_MAX;
+      .
+      .
+      .
+	  if(min_objective>test.objective()){
+	    Index=ite;
+	    min_objective=test.objective();
+	  }
+```
+
+よって10通りの平均ARIのみしか意味を持たない結果となったので
+これまでの実験結果から最良の平均ARIを得られたパラメータに固定して100通りの初期クラスタ中心を与え，平均と標準偏差，目的関数値，目的関数最小をとったARIを出力するmain関数を作成(main_clustering/initialize_centers/100times.cxx)
+
 ## 2018/11/21
 RFCMtypeのクラスタリングを用いた推薦システム実データのmain関数において
 これまでは、recom.filtering_similarities();によってアクティブユーザと同じクラスタに属さないユーザのピアソン相関係数(Similaritiy)を0にすることでその後呼ばれるrecom.pearsonpred2();ではそれらのSimilarityが使われない処理をしているつもりだったが、main関数内の初期クラスタ中心を与えるループのおわりにSimilarityの初期化が行われていなかったため想定していた処理と違う結果が得られてしまう．

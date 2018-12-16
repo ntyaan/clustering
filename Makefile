@@ -94,6 +94,9 @@ endif
 ifdef class
 	MACRO=-DCHECK_CLASS 
 endif
+ifdef a
+	A=-D$(a) 
+endif
 
 all : $(objects) 
 
@@ -367,6 +370,12 @@ init_centers_clustering_qfccmm.out : $(qfccmm) \
 main_clustering/initialize_centers/qfccmm.cxx
 	$(CXX) $(CXXFLAGS) $^ \
 	$(MACRO)$(FS) -o $@
+
+100times.out : $(qfccmm) $(qfccm) $(qfcs) $(bfccmm) \
+$(bfccm) $(bfcs) $(klfccmm) $(klfccm) $(klfcs) \
+main_clustering/initialize_centers/100times.cxx
+	$(CXX) $(CXXFLAGS) $^ \
+	$(A)$(MACRO)$(FS) -o $@
 
 clean :
 	rm -f *.out

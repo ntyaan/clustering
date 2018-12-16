@@ -8,13 +8,13 @@ std::string method=
   "SimplexData";
 //"tfidf1-SimplexData";
 //"tfidf2-SimplexData";
-constexpr int PARAMETER = 5;
+constexpr int PARAMETER = 6;
 constexpr int INIT_CENTERS = 10;
 
 int main(void){
   std::string c_p = current_path();
   std::ofstream ofs_ari("ARI-BFCCM-"+method+"_init_centers.txt", std::ios::app);
-  for(int INDEX=0;INDEX<(int)centers.size();INDEX++){
+  for(int INDEX=4;INDEX<(int)centers.size();INDEX++){
     const int centers_number=centers[INDEX];
     const std::string file=files[INDEX];
     std::cout<<files[INDEX]<<std::endl;
@@ -50,7 +50,7 @@ int main(void){
     //tfidf1(Data);
     //ARIテキスト書き込み
     std::ofstream ofs("ARI-BFCCM-"+method+"-"+file+".txt", std::ios::app);
-    double Parameter[PARAMETER]={1.00001, 1.0001, 1.001, 1.01, 1.1};
+    double Parameter[PARAMETER]={1.0+1.0e-15,1.00001, 1.0001, 1.001, 1.01, 1.1};
     BFCCM test(data_dimension, data_number, centers_number, 0);
     //正解の帰属度の読み込み
     std::ifstream ifs_correctCrispMembership
@@ -95,7 +95,8 @@ int main(void){
 	  //クラスタ中心の収束具合
 	  double diff_v=max_norm(test.tmp_centers()-test.centers());
 	  //クラスタ混合比の収束具合
-	  double diff_p=max_norm(test.tmp_clusters_size()-test.clusters_size());
+	  double diff_p=max_norm(test.tmp_clusters_size()
+				 -test.clusters_size());
 	  //全体の収束具合
 	  double diff=diff_u+diff_v+diff_p;
 	  savediff=diff;
@@ -141,7 +142,7 @@ int main(void){
 	  for(int j=0;j<test.initialize_c().size();j++)
 	    ofs<<test.initialize_c()[j]<<" ";
 	  ofs<<std::endl;
-	  if(min_objective<test.objective()){
+	  if(min_objective>test.objective()){
 	    Index=ite;
 	    min_objective=test.objective();
 	  }

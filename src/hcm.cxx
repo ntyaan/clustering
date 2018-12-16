@@ -286,79 +286,78 @@ void HCM::initialize_centers_dissimilarities(int index){
 }
 
 void HCM::initialize_centers(int random_index){
+  //20181212追加初期値としてnanにそうなデータ点を選ばない
+  int count=0;
   std::mt19937_64 mt;
   //データ番号をランダムに発生
   std::uniform_int_distribution<> randNum(0,data_number()-1);
   //0~1の実数を発生
   std::uniform_real_distribution<> rand01(0.0,1.0);
-  //クラスタ中心の初期化
-  for(int x=0;x<centers_number();x++){
-    for(int ell=0;ell<dimension();ell++){
-      Centers[x][ell]=0.0;
+  while(1){
+    bool p=true;
+    //クラスタ中心の初期化
+    for(int x=0;x<centers_number();x++){
+      for(int ell=0;ell<dimension();ell++){
+	Centers[x][ell]=0.0;
+      }
+      InitializeC[x]=-1;
     }
-    InitializeC[x]=-1;
-  }
-  //選ばれたデータ番号格納用
-  mt.seed(random_index);
-  //step1:ランダムに一つデータを選ぶ
-  InitializeC[0]=randNum(mt);
-  //step1で選ばれたデータを第一クラスタ中心とする
-  for(int ell=0;ell<Data[InitializeC[0]].essencialSize();ell++)
-    Centers[0][Data[InitializeC[0]].indexIndex(ell)]	  	  	  
-      =Data[InitializeC[0]].elementIndex(ell);
-  /*
-    double sum=0.0;
-    for(int ell=0;ell<dimension();ell++)
-    sum+=Centers[0][ell];
-    for(int ell=0;ell<dimension();ell++)
-    Centers[0][ell]/=sum;
-  */
-  for(int i=1;i<centers_number();i++){
-    //step:2
-    //データ間非類似度d_{i,k}を計算
-    //bFCCMならd_{i,k}はsum_{l=1}^{M} (w_{i,l})^{1/m_2}x_{k,l}
-    initialize_centers_dissimilarities(i-1);
-    //クラスタ中心とデータ点の距離を格納
-    double Tmp_Vector[data_number()];
-    //第二クラスタ決定以降は各クラスタ中心の中で
-    //データ点との距離が一番近いクラスタ中心を選択
-    for(int k=0;k<data_number();k++){
-      Tmp_Vector[k]=0.0;
-      double min=DBL_MAX;
-      for(int j=0;j<i;j++)
-	if(min>Dissimilarities[j][k])
-	  min=Dissimilarities[j][k];	      
-      Tmp_Vector[k]=min;
+    //選ばれたデータ番号格納用
+    mt.seed(random_index+count);
+    //step1:ランダムに一つデータを選ぶ
+    InitializeC[0]=randNum(mt);
+    //step1で選ばれたデータを第一クラスタ中心とする
+    for(int ell=0;ell<Data[InitializeC[0]].essencialSize();ell++)
+      Centers[0][Data[InitializeC[0]].indexIndex(ell)]	  	  	  
+	=Data[InitializeC[0]].elementIndex(ell);
+    for(int i=1;i<centers_number();i++){
+      //step:2
+      //データ間非類似度d_{i,k}を計算
+      //bFCCMならd_{i,k}はsum_{l=1}^{M} (w_{i,l})^{1/m_2}x_{k,l}
+      initialize_centers_dissimilarities(i-1);
+      //クラスタ中心とデータ点の距離を格納
+      double Tmp_Vector[data_number()];
+      //第二クラスタ決定以降は各クラスタ中心の中で
+      //データ点との距離が一番近いクラスタ中心を選択
+      for(int k=0;k<data_number();k++){
+	Tmp_Vector[k]=0.0;
+	double min=DBL_MAX;
+	for(int j=0;j<i;j++)
+	  if(min>Dissimilarities[j][k])
+	    min=Dissimilarities[j][k];	      
+	Tmp_Vector[k]=min;
+      }
+      //各非類似度を0~1の線で表す用
+      double Tmp_Similarities[data_number()+1];
+      for(int k=0;k<data_number()+1;k++)
+	Tmp_Similarities[k]=0.0;
+      double Sum=0.0,tmp=0.0;
+      //合計を計算
+      for(int k=0;k<data_number();k++)
+	Sum+=Tmp_Vector[k];
+      //std::cout<<std::endl<<std::endl;
+      //非類似度を0~1で表現
+      for(int k=1;k<data_number()+1;k++){
+	tmp+=Tmp_Vector[k-1]/Sum;
+	Tmp_Similarities[k]=tmp;
+      }
+      //0~1をランダムで選び，選ばれたデータをクラスタ中心へ
+      double rnd01=rand01(mt);
+      for(int k=0;k<data_number();k++)
+	if(Tmp_Similarities[k]<rnd01&&Tmp_Similarities[k+1]>=rnd01)
+	  InitializeC[i]=k;
+      for(int ell=0;ell<Data[InitializeC[i]].essencialSize();ell++)
+	Centers[i][Data[InitializeC[i]].indexIndex(ell)]
+	  =Data[InitializeC[i]].elementIndex(ell);
     }
-    //各非類似度を0~1の線で表す用
-    double Tmp_Similarities[data_number()+1];
-    for(int k=0;k<data_number()+1;k++)
-      Tmp_Similarities[k]=0.0;
-    double Sum=0.0,tmp=0.0;
-    //合計を計算
-    for(int k=0;k<data_number();k++)
-      Sum+=Tmp_Vector[k];
-    //std::cout<<std::endl<<std::endl;
-    //非類似度を0~1で表現
-    for(int k=1;k<data_number()+1;k++){
-      tmp+=Tmp_Vector[k-1]/Sum;
-      Tmp_Similarities[k]=tmp;
-    }
-    //0~1をランダムで選び，選ばれたデータをクラスタ中心へ
-    double rnd01=rand01(mt);
-    for(int k=0;k<data_number();k++)
-      if(Tmp_Similarities[k]<rnd01&&Tmp_Similarities[k+1]>=rnd01)
-	InitializeC[i]=k;
-    for(int ell=0;ell<Data[InitializeC[i]].essencialSize();ell++)
-      Centers[i][Data[InitializeC[i]].indexIndex(ell)]
-	=Data[InitializeC[i]].elementIndex(ell);
-    /*
-      double sum=0.0;
-      for(int ell=0;ell<dimension();ell++)
-	sum+=Centers[i][ell];
-      for(int ell=0;ell<dimension();ell++)
-	Centers[i][ell]/=sum;
-    */
+    for(int index=0;index<centers_number();index++)
+      if(InitializeC[index]==-1){
+	p=false;
+	count+=centers_number();
+      }
+    count++;
+    if(p==true)
+      break;
   }
   return;
 }
@@ -378,7 +377,7 @@ void HCM::initialize_membership(std::string file){
 	  =1.0-(centers_number()-1.0)/100.0;
       else
 	Membership[i][k]=1.0/100.0;/*((centers_number()-1.0)/100.0)
-			   /(centers_number()-1.0)*/;
+				     /(centers_number()-1.0)*/;
     }
   }
   if(centers_number()==4)

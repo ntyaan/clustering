@@ -15,7 +15,7 @@ double &KLFCM::fuzzifierLambda(void){
 
 void KLFCM::revise_membership(void){
 #ifdef CHECK_CLASS
-  std::cout<<"KLFCM::revise_membershipが呼び出されました"<<std::endl;;
+  std::cout<<"KLFCM::revise_membershipが呼び出されました"<<std::endl;
 #endif
   Tmp_Membership=Membership;
   for(int k=0;k<data_number();k++){
@@ -34,7 +34,7 @@ void KLFCM::revise_membership(void){
 
 void KLFCM::revise_clusters_size(void){
 #ifdef CHECK_CLASS
-  std::cout<<"KLFCM::revise_clusters_sizeが呼び出されました"<<std::endl;;
+  std::cout<<"KLFCM::revise_clusters_sizeが呼び出されました"<<std::endl;
 #endif
   Tmp_Clusters_size=Clusters_size;
   for(int i=0;i<centers_number();i++){
@@ -53,7 +53,7 @@ void KLFCM::set_objective(void){
     for(int k=0;k<data_number();k++){
       Objective+=Membership[i][k]*Dissimilarities[i][k]
 	+(1.0/FuzzifierLambda)*Membership[i][k]
-	*log(Membership[i][k]/Clusters_size[i]);
+	*(log(Membership[i][k])-log(Clusters_size[i]));
     }
   }
   return;
