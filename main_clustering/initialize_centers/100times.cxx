@@ -619,7 +619,11 @@ int main(void){
     ifs_correctCrispMembership.close();
     //データを与える
     test.copydata(Data);
+#if defined (KLFCS0) || (KLFCS1) || (KLFCS2) || (BFCS0) || (BFCS1) || (BFCS2) || (QFCS0) || (QFCS1) || (QFCS2)
+    test.ForSphericalData();
+#else
     test.ForMMMData();
+#endif
     double average_ari=-1.0, sd=0.0, min_obje_ari=0.0;
     std::vector<double> ARIs(INIT_CENTERS);
     int FALSE=0, Index=0; double sumARI=0.0, min_objective=DBL_MAX;
