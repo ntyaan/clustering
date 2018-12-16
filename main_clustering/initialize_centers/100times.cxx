@@ -8,7 +8,7 @@
 #include"../../src/qfccm.h"
 #include"../../src/qfccmm.h"
 #include"../data_doc.h"
-constexpr int DataIndex=3;
+constexpr int DataIndex=0;
 #ifdef KLFCCM0
 std::vector<double> klfccm0=
   {
@@ -379,7 +379,7 @@ std::vector<double> qfcs0m=
    1.0+1.0E-5,1.0+1.0E-2,1.0+1.0E-15,1.0+1.0E-15,1.0+1.0E-4,
    1.0+1.0E-3,1.0+1.0E-4,1.0+1.0E-3,1.0+1.0E-3,1.0+1.0E-15,
    1.0+1.0E-1,1.0+1.0E-2,1.0+1.0E-5,1.0+1.0E-15,1.0+1.0E-4,
-   1.0+1.0E-3,1.0+1.0E-2,1.0+1.0E-1,1.0+1.0E-2,1.0+1.0E-2
+   1.0+1.0E-3,1.0+1.0E-2,1.0+1.0E-1,1.0+1.0E-2,1.0+1.0E-2,
    1.0+1.0E-5,1.0+1.0E-5
   };
 std::string method="qfcs0_100times_list.txt";
