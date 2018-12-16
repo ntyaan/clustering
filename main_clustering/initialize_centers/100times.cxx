@@ -494,19 +494,19 @@ int main(void){
 #ifdef QFCCM0
     ofs_list<<"tfidfなし"<<std::endl;
     QFCCM test(data_dimension, data_number, centers_number,
-	       qfccm0m[INDEX], qfccm0l[INDEDX]);
+	       qfccm0m[INDEX], qfccm0l[INDEX]);
 #endif
 #ifdef QFCCM1
     ofs_list<<"tfidfA"<<std::endl;
     tfidf1(Data);
     QFCCM test(data_dimension, data_number, centers_number,
-	       qfccm1m[INDEX], qfccm1l[INDEDX]);
+	       qfccm1m[INDEX], qfccm1l[INDEX]);
 #endif
 #ifdef QFCCM2
     ofs_list<<"tfidfB"<<std::endl;
     tfidf2(Data);
     QFCCM test(data_dimension, data_number, centers_number,
-	       1.0+1.0E-2, qfccm2l[INDEDX]);
+	       1.0+1.0E-2, qfccm2l[INDEX]);
 #endif
 #ifdef KLFCCMM0
     ofs_list<<"tfidfなし"<<std::endl;
