@@ -6,17 +6,17 @@
 #define CLUSTERINGTRIALS 10
 //pearson, eicf, co-clustering
 #define METHOD_NUMBER 2
-//BookCrossingは10240欠損させる
-//他は20480欠損させる
 //BEGINは最初の欠損数，ENDは最大の欠損数
-#ifdef BOOK
-#define KESSON 10000
-#elif defined SUSHI
-#define KESSON 10000
+#if defined (BOOK) || (SUSHI) 
+#define KESSON 20000
+#elif defined EPINIONS
+#define KESSON 30000
+//#elif defined (MOVIE) || (LIBIMSETI)
+//#define KESSON 80000
 #elif defined ARTIFICIALITY
 #define KESSON 7500
 #else
-#define KESSON 20000
+#define KESSON 100000
 #endif
 
 //人工データ欠損数

@@ -27,8 +27,8 @@ int main(void){
     Recom recom(user_number, item_number,
 		clusters_number, clusters_number, KESSON);
     recom.method_name()=METHOD_NAME;
-    for(double m=1.00000001;m<=1.00000001;m+=0.0003){
-      for(double lambda=1000;lambda<=1000;lambda*=10){
+    for(double m=1.0001;m<=1.001;m+=0.0003){
+      for(double lambda=1.0;lambda<=1000;lambda*=10){
 	//時間計測
 	auto start=std::chrono::system_clock::now();
 	QFCCM test(item_number, user_number, 
@@ -48,7 +48,7 @@ int main(void){
 	  //初期化
 	  recom.reset();
 	  //データを欠損
-	  recom.revise_missing_values();
+	  recom.revise_missing_values_new();
 	  recom.pearsonsim();
 	  //データをtestに渡す
 	  test.copydata(recom.sparseincompletedata());

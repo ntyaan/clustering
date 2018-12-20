@@ -125,14 +125,14 @@ void Recom::revise_missing_values_new(void){
       randCol(0,SparseCorrectData[tmprow].essencialSize()-1);
     //ランダムに列番号生成
     tmpcol=randCol(mt);
-    //データ行すべて欠損させないように,一行5要素は残す
+    //データ行すべて欠損させないように,一行に2要素は必ず残す
     int c=0;
     for(int i=0;i<SparseIncompleteData[tmprow].essencialSize();i++)
       if(SparseIncompleteData[tmprow].elementIndex(i)==0)
 	c++;
     //既に欠損していない場合
     if(SparseIncompleteData[tmprow].elementIndex(tmpcol)>0
-       && SparseIncompleteData[tmprow].essencialSize()-c>5){
+       && SparseIncompleteData[tmprow].essencialSize()-c>1){
       //要素を0にする
       SparseIncompleteData[tmprow].elementIndex(tmpcol)=0;
       //欠損した行番号を保存
@@ -163,7 +163,7 @@ void Recom::revise_missing_values(void){
       randCol(0,SparseCorrectData[tmprow].essencialSize()-1);
     //ランダムに列番号生成
     tmpcol=randCol(mt);
-    //(ここミス201821まで)データ行すべて欠損させないように
+    //(ここミス20181121まで)データ行すべて欠損させないように
     int c=-1;
     for(int i=0;i<SparseIncompleteData[tmprow].essencialSize();i++)
       if(SparseIncompleteData[tmprow].elementIndex(i)==0)

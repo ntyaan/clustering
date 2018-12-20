@@ -47,7 +47,7 @@ int main(void){
 	  //初期化
 	  recom.reset();
 	  //データを欠損
-	  recom.revise_missing_values();
+	  recom.revise_missing_values_new();
 	  recom.pearsonsim();
 	  //データをtestに渡す
 	  test.copydata(recom.sparseincompletedata());

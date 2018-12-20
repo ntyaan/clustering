@@ -48,7 +48,7 @@ int main(void){
 	  //初期化
 	  recom.reset();
 	  //データを欠損
-	  recom.revise_missing_values();
+	  recom.revise_missing_values_new();
 	  //相関係数計算
 	  recom.pearsonsim();
 	  //データ(相関係数)をtestに渡す
